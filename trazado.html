@@ -228,6 +228,9 @@ select:focus {
       text-transform: uppercase;
       cursor: pointer;
     }
+      .trace-btn + .trace-btn {
+     margin-top: 0.5rem;
+    }
 
     .preview {
       background: var(--light);
@@ -266,6 +269,7 @@ select:focus {
       }
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 
 <body>
@@ -310,15 +314,33 @@ select:focus {
 
     <div class="pattern-content">
       <div class="measurements">
-        <h3>Medidas necesarias</h3>
-        <div id="measurementList"></div>
-        <button class="trace-btn" onclick="drawPattern()">Trazar patrón</button>
-      </div>
+  <h3>Medidas necesarias</h3>
 
+  <div id="measurementList"></div>
+
+  <button class="trace-btn" onclick="drawPattern()">
+      Trazar patrón
+  </button>
+
+  <button
+      id="pdfButton"
+      class="trace-btn"
+      onclick="downloadPatternPDF()"
+      style="display:none">
+
+      Descargar PDF A4
+
+  </button>
+
+</div>
       <div class="preview">
         <h3>Vista del patrón</h3>
 
-        <svg id="patternPreview" class="pattern-preview" viewBox="0 0 500 360">
+        <svg
+    id="patternPreview"
+    class="pattern-preview"
+    viewBox="0 0 800 800"
+    preserveAspectRatio="xMidYMid meet">
           <text x="250" y="180" text-anchor="middle" fill="#979187" font-size="16">
             Aquí aparecerá el patrón
           </text>
@@ -360,7 +382,8 @@ select:focus {
           "Cintura",
           "Cadera",
           "Altura de cadera",
-          "Largo de falda"
+          "Largo de falda",
+          "Pretina"
         ]
       }
     };
@@ -379,10 +402,25 @@ select:focus {
         const row = document.createElement("div");
         row.className = "measurement-row";
 
-        row.innerHTML = `
-          <label>${measurement}</label>
-          <input type="number" placeholder="cm" />
-        `;
+const ids = {
+    "Contorno cintura":"cintura",
+    "Contorno cadera":"cadera",
+    "Alto cadera":"alto",
+    "Largo de falda":"largo",
+    "Pretina":"pretina"
+}
+
+
+row.innerHTML=`
+
+<label>${measurement}</label>
+
+<input
+id="${ids[measurement]}"
+type="number"
+placeholder="cm">
+
+`
 
         measurementList.appendChild(row);
       });
@@ -429,7 +467,80 @@ select:focus {
           Patrón base preliminar
         </text>
       `;
+      document.getElementById("pdfButton").style.display = "block";
     }
+   function downloadPatternPDF() {
+  const { jsPDF } = window.jspdf;
+
+  const pdf = new jsPDF({
+    orientation: "portrait",
+    unit: "mm",
+    format: "a4"
+  });
+
+  // A4 settings
+  const pageWidth = 210;
+  const pageHeight = 297;
+  const margin = 20; // 2 cm
+
+  const printableWidth = pageWidth - margin * 2;
+  const printableHeight = pageHeight - margin * 2;
+
+  // Temporary test pattern size in mm
+  // Later this will come from your actual skirt pattern calculations
+  const patternWidth = 300;
+  const patternHeight = 420;
+
+  const pagesAcross = Math.ceil(patternWidth / printableWidth);
+  const pagesDown = Math.ceil(patternHeight / printableHeight);
+
+  for (let row = 0; row < pagesDown; row++) {
+    for (let col = 0; col < pagesAcross; col++) {
+      if (row !== 0 || col !== 0) {
+        pdf.addPage();
+      }
+
+      // Light margin guide
+      pdf.setDrawColor(210, 210, 210);
+      pdf.setLineWidth(0.2);
+      pdf.rect(margin, margin, printableWidth, printableHeight);
+
+      // Page label
+      pdf.setFontSize(10);
+      pdf.setTextColor(90, 80, 68);
+      pdf.text(`Página ${row + 1}-${col + 1}`, margin, 12);
+
+      // 5 cm test square
+      pdf.setDrawColor(90, 80, 68);
+      pdf.rect(margin, pageHeight - margin - 50, 50, 50);
+      pdf.setFontSize(8);
+      pdf.text("5 cm x 5 cm", margin, pageHeight - margin - 53);
+
+      // Temporary pattern rectangle
+      // This simulates the pattern being split across A4 pages
+      const visibleX = col * printableWidth;
+      const visibleY = row * printableHeight;
+
+      pdf.setDrawColor(92, 80, 68);
+      pdf.setLineWidth(0.4);
+
+      // Draw only the part of the rectangle that belongs on this page
+      const rectX = margin - visibleX;
+      const rectY = margin - visibleY;
+
+      pdf.rect(rectX, rectY, patternWidth, patternHeight);
+
+      // Small cut/tape guide marks
+      pdf.setDrawColor(180, 180, 180);
+      pdf.line(margin, margin - 5, margin, margin);
+      pdf.line(margin - 5, margin, margin, margin);
+      pdf.line(pageWidth - margin, margin - 5, pageWidth - margin, margin);
+      pdf.line(pageWidth - margin, margin, pageWidth - margin + 5, margin);
+    }
+  }
+
+  pdf.save("patron-a4.pdf");
+}
   </script>
 
 </body>
