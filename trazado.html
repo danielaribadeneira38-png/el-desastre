@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
     :root {
@@ -16,8 +17,6 @@
       --contrast: #979187;
       --primary: #768067;
       --text: #5c5044;
-      --dark: #2a2320;
-      --accent: #8a9e7a;
       --white: #f5f3f0;
       --font-display: 'Cormorant Garamond', Georgia, serif;
       --font-body: 'DM Sans', system-ui, sans-serif;
@@ -34,10 +33,7 @@
 
     a { color: inherit; text-decoration: none; }
 
-    .top-bar {
-      background: var(--primary);
-      height: 36px;
-    }
+    .top-bar { background: var(--primary); height: 36px; }
 
     .nav {
       height: 60px;
@@ -68,8 +64,6 @@
       color: var(--contrast);
     }
 
-    .nav-links a:hover { color: var(--text); }
-
     .page-header {
       padding: 3rem 2.5rem 1rem;
       text-align: center;
@@ -86,7 +80,6 @@
       max-width: 620px;
       margin: 0.8rem auto 0;
       line-height: 1.6;
-      color: var(--text);
     }
 
     .selector-area {
@@ -98,39 +91,36 @@
       padding: 0 2.5rem;
     }
 
-.selector-box {
-  background: var(--white);
-  padding: 1.5rem;
-  border-radius: 18px;
-  border: 1px solid rgba(92,80,68,0.08);
-}
+    .selector-box {
+      background: var(--white);
+      padding: 1.5rem;
+      border-radius: 18px;
+      border: 1px solid rgba(92,80,68,0.08);
+    }
 
     .selector-box label {
       display: block;
-      font-family: var(--font-body);
+      font-family: var(--font-display);
       font-size: 1.7rem;
+      font-style: italic;
+      font-weight: 300;
       margin-bottom: 0.8rem;
     }
 
-      select {
+    select {
       width: 100%;
       appearance: none;
       -webkit-appearance: none;
-
       padding: 0.9rem 2.8rem 0.9rem 1.2rem;
       border: 1px solid var(--contrast);
       border-radius: 999px;
-
       background-color: var(--bg);
       color: var(--text);
-
       font-family: var(--font-body);
       font-size: 1.2rem;
       font-style: italic;
-
       cursor: pointer;
       outline: none;
-
       background-image:
         linear-gradient(45deg, transparent 50%, var(--primary) 50%),
         linear-gradient(135deg, var(--primary) 50%, transparent 50%);
@@ -139,19 +129,7 @@
         calc(100% - 15px) center;
       background-size: 7px 7px, 7px 7px;
       background-repeat: no-repeat;
-
-  transition: border-color 0.2s ease, transform 0.15s ease;
-}
-
-select:hover {
-  border-color: var(--primary);
-  transform: scale(1.01);
-}
-
-select:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(118, 128, 103, 0.18);
-}
+    }
 
     .pattern-card {
       display: none;
@@ -202,10 +180,6 @@ select:focus {
       margin-bottom: 0.8rem;
     }
 
-    .measurement-row label {
-      font-size: 0.85rem;
-    }
-
     .measurement-row input {
       width: 100%;
       padding: 0.55rem;
@@ -222,15 +196,13 @@ select:focus {
       border-radius: 22px;
       background: var(--text);
       color: var(--bg);
-      font-family: var(--font-body);
       font-size: 0.75rem;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       cursor: pointer;
     }
-      .trace-btn + .trace-btn {
-     margin-top: 0.5rem;
-    }
+
+    .trace-btn + .trace-btn { margin-top: 0.5rem; }
 
     .preview {
       background: var(--light);
@@ -241,17 +213,10 @@ select:focus {
 
     .pattern-preview {
       width: 100%;
-      height: 360px;
+      height: 500px;
       background: var(--white);
       border-radius: 14px;
       border: 1px dashed var(--contrast);
-    }
-
-    .placeholder-text {
-      margin-top: 0.8rem;
-      font-size: 0.8rem;
-      color: var(--text);
-      opacity: 0.8;
     }
 
     @media (max-width: 800px) {
@@ -259,17 +224,8 @@ select:focus {
       .pattern-content {
         grid-template-columns: 1fr;
       }
-
-      .nav {
-        padding: 0 1.2rem;
-      }
-
-      .nav-links {
-        gap: 1rem;
-      }
     }
   </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 
 <body>
@@ -293,62 +249,54 @@ select:focus {
 
   <section class="selector-area">
     <div class="selector-box">
-      <label for="topSelect">Prendas Superiores</label>
+      <label for="topSelect">Prendas superiores</label>
       <select id="topSelect">
         <option value="">Seleccionar</option>
-        <option value="bodice">Cuerpo Basico</option>
+        <option value="bodice">Cuerpo básico</option>
       </select>
     </div>
 
     <div class="selector-box">
-      <label for="bottomSelect">Prendas Inferiores</label>
+      <label for="bottomSelect">Prendas inferiores</label>
       <select id="bottomSelect">
         <option value="">Seleccionar</option>
-        <option value="skirt">Falda Basica</option>
+        <option value="skirt">Falda básica</option>
       </select>
     </div>
   </section>
 
   <section id="patternCard" class="pattern-card">
-    <h2 id="patternTitle" class="pattern-title">Basic bodice</h2>
+    <h2 id="patternTitle" class="pattern-title">Seleccione un patrón</h2>
 
     <div class="pattern-content">
       <div class="measurements">
-  <h3>Medidas necesarias</h3>
+        <h3>Medidas necesarias</h3>
+        <div id="measurementList"></div>
 
-  <div id="measurementList"></div>
+        <button class="trace-btn" onclick="drawPattern()">Trazar patrón</button>
 
-  <button class="trace-btn" onclick="drawPattern()">
-      Trazar patrón
-  </button>
+        <button
+          id="pdfButton"
+          class="trace-btn"
+          onclick="downloadPatternPDF()"
+          style="display:none">
+          Descargar PDF A4
+        </button>
+      </div>
 
-  <button
-      id="pdfButton"
-      class="trace-btn"
-      onclick="downloadPatternPDF()"
-      style="display:none">
-
-      Descargar PDF A4
-
-  </button>
-
-</div>
       <div class="preview">
         <h3>Vista del patrón</h3>
 
         <svg
-    id="patternPreview"
-    class="pattern-preview"
-    viewBox="0 0 800 800"
-    preserveAspectRatio="xMidYMid meet">
-          <text x="250" y="180" text-anchor="middle" fill="#979187" font-size="16">
+          id="patternPreview"
+          class="pattern-preview"
+          viewBox="0 0 800 800"
+          preserveAspectRatio="xMidYMid meet">
+
+          <text x="400" y="400" text-anchor="middle" fill="#979187" font-size="20">
             Aquí aparecerá el patrón
           </text>
         </svg>
-
-        <p class="placeholder-text">
-          Por ahora esta imagen es una base visual. Luego conectamos aquí tus cálculos reales.
-        </p>
       </div>
     </div>
   </section>
@@ -363,29 +311,28 @@ select:focus {
 
     const patterns = {
       bodice: {
-        title: "Basic bodice",
-        measurements: [
-          "Busto",
-          "Cintura",
-          "Contorno de cuello",
-          "Ancho de espalda",
-          "Ancho de hombro",
-          "Largo talle delantero",
-          "Largo talle espalda",
-          "Altura de busto",
-          "Separación de busto"
-        ]
+        title: "Cuerpo básico",
+        measurements: ["Busto", "Cintura", "Contorno de cuello"]
       },
+
       skirt: {
-        title: "Falda Basica",
+        title: "Falda básica",
         measurements: [
-          "Cintura",
-          "Cadera",
-          "Altura de cadera",
-          "Largo de falda",
+          "Contorno cintura",
+          "Contorno cadera",
+          "Alto cadera",
+          "Largo total",
           "Pretina"
         ]
       }
+    };
+
+    const ids = {
+      "Contorno cintura": "cintura",
+      "Contorno cadera": "cadera",
+      "Alto cadera": "alto",
+      "Largo total": "largo",
+      "Pretina": "pretina"
     };
 
     function showPattern(type) {
@@ -395,38 +342,25 @@ select:focus {
 
       patternCard.classList.add("active");
       patternTitle.textContent = selectedPattern.title;
-
       measurementList.innerHTML = "";
+      document.getElementById("pdfButton").style.display = "none";
 
       selectedPattern.measurements.forEach((measurement) => {
         const row = document.createElement("div");
         row.className = "measurement-row";
 
-const ids = {
-    "Contorno cintura":"cintura",
-    "Contorno cadera":"cadera",
-    "Alto cadera":"alto",
-    "Largo de falda":"largo",
-    "Pretina":"pretina"
-}
+        const inputId = ids[measurement] || measurement.toLowerCase().replaceAll(" ", "-");
 
-
-row.innerHTML=`
-
-<label>${measurement}</label>
-
-<input
-id="${ids[measurement]}"
-type="number"
-placeholder="cm">
-
-`
+        row.innerHTML = `
+          <label>${measurement}</label>
+          <input id="${inputId}" type="number" placeholder="cm">
+        `;
 
         measurementList.appendChild(row);
       });
 
       patternPreview.innerHTML = `
-        <text x="250" y="180" text-anchor="middle" fill="#979187" font-size="16">
+        <text x="400" y="400" text-anchor="middle" fill="#979187" font-size="20">
           Presiona “Trazar patrón”
         </text>
       `;
@@ -443,104 +377,179 @@ placeholder="cm">
     });
 
     function drawPattern() {
-      patternPreview.innerHTML = `
-        <path d="M 170 60 L 330 60 L 360 300 L 140 300 Z"
-              fill="none"
-              stroke="#5c5044"
-              stroke-width="3" />
-
-        <line x1="170" y1="120" x2="330" y2="120"
-              stroke="#979187"
-              stroke-width="1"
-              stroke-dasharray="6 6" />
-
-        <line x1="155" y1="210" x2="345" y2="210"
-              stroke="#979187"
-              stroke-width="1"
-              stroke-dasharray="6 6" />
-
-        <circle cx="250" cy="60" r="4" fill="#768067" />
-        <circle cx="140" cy="300" r="4" fill="#768067" />
-        <circle cx="360" cy="300" r="4" fill="#768067" />
-
-        <text x="250" y="340" text-anchor="middle" fill="#5c5044" font-size="14">
-          Patrón base preliminar
-        </text>
-      `;
-      document.getElementById("pdfButton").style.display = "block";
-    }
-   function downloadPatternPDF() {
-  const { jsPDF } = window.jspdf;
-
-  const pdf = new jsPDF({
-    orientation: "portrait",
-    unit: "mm",
-    format: "a4"
-  });
-
-  // A4 settings
-  const pageWidth = 210;
-  const pageHeight = 297;
-  const margin = 20; // 2 cm
-
-  const printableWidth = pageWidth - margin * 2;
-  const printableHeight = pageHeight - margin * 2;
-
-  // Temporary test pattern size in mm
-  // Later this will come from your actual skirt pattern calculations
-  const patternWidth = 300;
-  const patternHeight = 420;
-
-  const pagesAcross = Math.ceil(patternWidth / printableWidth);
-  const pagesDown = Math.ceil(patternHeight / printableHeight);
-
-  for (let row = 0; row < pagesDown; row++) {
-    for (let col = 0; col < pagesAcross; col++) {
-      if (row !== 0 || col !== 0) {
-        pdf.addPage();
+      if (bottomSelect.value === "skirt") {
+        drawSkirt();
+        return;
       }
 
-      // Light margin guide
+      if (topSelect.value === "bodice") {
+        drawBodice();
+        return;
+      }
+    }
+
+    function drawSkirt() {
+      const cintura = Number(document.getElementById("cintura").value);
+      const cadera = Number(document.getElementById("cadera").value);
+      const alto = Number(document.getElementById("alto").value);
+      const largo = Number(document.getElementById("largo").value);
+      const pretina = Number(document.getElementById("pretina").value);
+
+      if (!cintura || !cadera || !alto || !largo || !pretina) {
+        alert("Por favor ingresa todas las medidas.");
+        return;
+      }
+
+      const scale = 6;
+      const x0 = 120;
+      const y0 = 70;
+
+      const B = { x: x0, y: y0 };
+      const O = { x: B.x + (cintura / 8) * scale, y: y0 };
+      const O2 = { x: O.x + 3 * scale, y: y0 };
+      const M = { x: O2.x + (cintura / 8) * scale, y: y0 };
+
+      const K = { x: B.x, y: B.y + alto * scale };
+      const L = { x: K.x + (cintura / 8 + 1.5) * scale, y: K.y };
+      const J = { x: K.x + (cadera / 4) * scale, y: K.y };
+
+      const P = { x: B.x, y: B.y + largo * scale };
+      const R = { x: P.x + (cadera / 4) * scale, y: P.y };
+
+      const seam = 1 * scale;
+      const waistY = B.y + pretina * scale;
+
+      const label = (name, p) => `
+        <text x="${p.x - 10}" y="${p.y - 8}" fill="#768067" font-size="14">${name}</text>
+      `;
+
+      const point = (p) => `
+        <circle cx="${p.x}" cy="${p.y}" r="3" fill="#768067" />
+      `;
+
+      patternPreview.innerHTML = `
+        <!-- Seam allowance approximation -->
+        <path
+          d="
+            M ${B.x - seam} ${B.y - seam}
+            L ${M.x + seam} ${M.y - seam}
+            Q ${J.x + seam + 12} ${J.y + 35} ${J.x + seam} ${J.y}
+            L ${R.x + seam} ${R.y + seam}
+            L ${P.x - seam} ${P.y + seam}
+            Z
+          "
+          fill="none"
+          stroke="#8a9e7a"
+          stroke-width="2"
+          stroke-dasharray="8 6"
+        />
+
+        <!-- Main pattern outline -->
+        <path
+          d="
+            M ${B.x} ${B.y}
+            L ${M.x} ${M.y}
+            Q ${J.x + 10} ${J.y + 30} ${J.x} ${J.y}
+            L ${R.x} ${R.y}
+            L ${P.x} ${P.y}
+            Z
+          "
+          fill="none"
+          stroke="#5c5044"
+          stroke-width="3"
+        />
+
+        <!-- Hip line -->
+        <line x1="${K.x}" y1="${K.y}" x2="${J.x}" y2="${J.y}"
+          stroke="#979187" stroke-width="1.5" stroke-dasharray="8 6" />
+
+        <!-- Dart -->
+        <line x1="${O.x}" y1="${O.y}" x2="${L.x}" y2="${L.y}"
+          stroke="#5c5044" stroke-width="2" />
+        <line x1="${O2.x}" y1="${O2.y}" x2="${L.x}" y2="${L.y}"
+          stroke="#5c5044" stroke-width="2" />
+
+        <!-- Waistband cut line -->
+        <line x1="${B.x}" y1="${waistY}" x2="${M.x}" y2="${waistY}"
+          stroke="#979187" stroke-width="1.5" stroke-dasharray="5 5" />
+
+        <!-- Points -->
+        ${point(B)} ${point(O)} ${point(O2)} ${point(M)}
+        ${point(K)} ${point(L)} ${point(J)} ${point(P)} ${point(R)}
+
+        <!-- Labels -->
+        ${label("B", B)}
+        ${label("O", O)}
+        ${label("O₂", O2)}
+        ${label("M", M)}
+        ${label("K", K)}
+        ${label("L", L)}
+        ${label("J", J)}
+        ${label("P", P)}
+        ${label("R", R)}
+
+        <!-- Waistband piece preview -->
+        <rect
+          x="${B.x}"
+          y="${P.y + 60}"
+          width="${M.x - B.x}"
+          height="${pretina * scale}"
+          fill="none"
+          stroke="#5c5044"
+          stroke-width="3"
+        />
+
+        <text x="${B.x}" y="${P.y + 45}" fill="#5c5044" font-size="15">
+          Pretina
+        </text>
+
+        <text x="400" y="760" text-anchor="middle" fill="#979187" font-size="14">
+          Línea café = patrón · línea verde = margen de costura 1 cm
+        </text>
+      `;
+
+      document.getElementById("pdfButton").style.display = "block";
+    }
+
+    function drawBodice() {
+      patternPreview.innerHTML = `
+        <text x="400" y="400" text-anchor="middle" fill="#979187" font-size="20">
+          Cuerpo básico próximamente
+        </text>
+      `;
+    }
+
+    function downloadPatternPDF() {
+      const { jsPDF } = window.jspdf;
+
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4"
+      });
+
+      const pageWidth = 210;
+      const pageHeight = 297;
+      const margin = 20;
+
+      const printableWidth = pageWidth - margin * 2;
+      const printableHeight = pageHeight - margin * 2;
+
       pdf.setDrawColor(210, 210, 210);
       pdf.setLineWidth(0.2);
       pdf.rect(margin, margin, printableWidth, printableHeight);
 
-      // Page label
       pdf.setFontSize(10);
       pdf.setTextColor(90, 80, 68);
-      pdf.text(`Página ${row + 1}-${col + 1}`, margin, 12);
+      pdf.text("Falda básica - Página de prueba", margin, 12);
 
-      // 5 cm test square
       pdf.setDrawColor(90, 80, 68);
       pdf.rect(margin, pageHeight - margin - 50, 50, 50);
       pdf.setFontSize(8);
       pdf.text("5 cm x 5 cm", margin, pageHeight - margin - 53);
 
-      // Temporary pattern rectangle
-      // This simulates the pattern being split across A4 pages
-      const visibleX = col * printableWidth;
-      const visibleY = row * printableHeight;
-
-      pdf.setDrawColor(92, 80, 68);
-      pdf.setLineWidth(0.4);
-
-      // Draw only the part of the rectangle that belongs on this page
-      const rectX = margin - visibleX;
-      const rectY = margin - visibleY;
-
-      pdf.rect(rectX, rectY, patternWidth, patternHeight);
-
-      // Small cut/tape guide marks
-      pdf.setDrawColor(180, 180, 180);
-      pdf.line(margin, margin - 5, margin, margin);
-      pdf.line(margin - 5, margin, margin, margin);
-      pdf.line(pageWidth - margin, margin - 5, pageWidth - margin, margin);
-      pdf.line(pageWidth - margin, margin, pageWidth - margin + 5, margin);
+      pdf.save("falda-basica-a4.pdf");
     }
-  }
-
-  pdf.save("patron-a4.pdf");
-}
   </script>
 
 </body>
