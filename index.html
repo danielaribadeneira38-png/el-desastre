@@ -20,6 +20,8 @@
       --white:    #f5f3f0;
       --font-display: 'Cormorant Garamond', Georgia, serif;
       --font-body:    'DM Sans', system-ui, sans-serif;
+      --gap: 16px;
+      --x: min(46vw, 560px);
     }
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -30,20 +32,18 @@
 
     /* TOP BAR */
     .top-bar {
-      background: var(--accent);
+      background: var(--primary);
       height: 36px;
       width: 100%;
     }
 
     /* NAV */
     .nav {
-      background: var(--dark);
+      background: var(--bg);
       height: 60px;
       display: flex;
       align-items: center;
-      justify-content: flex-end;
       padding: 0 2.5rem;
-      gap: 3rem;
       border-bottom: 1px solid var(--contrast);
     }
     .nav-logo {
@@ -52,19 +52,20 @@
       font-weight: 300;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: var(--white);
+      color: var(--text);
       margin-right: auto;
     }
     .nav-links { display: flex; gap: 2rem; list-style: none; }
     .nav-links a {
+      font-family: var(--font-body);
       font-size: 0.72rem;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--light);
+      color: var(--contrast);
       transition: color 0.2s;
     }
-    .nav-links a:hover { color: var(--white); }
-    .nav-toggle { display: none; background: none; border: none; font-size: 1.3rem; color: var(--white); cursor: pointer; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-toggle { display: none; background: none; border: none; font-size: 1.3rem; color: var(--text); cursor: pointer; }
 
     /* BUTTONS */
     .btn {
@@ -73,132 +74,84 @@
       font-size: 0.72rem;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      padding: 0.7rem 1.5rem;
-      border: none;
+      padding: 0.75rem 1.5rem;
       cursor: pointer;
-      transition: transform 0.15s ease;
+      border: none;
       text-align: center;
+      transition: transform 0.15s ease;
+      width: 100%;
     }
     .btn:hover { transform: scale(1.04); }
-    .btn-light { background: var(--bg); color: var(--text); }
     .btn-dark  { background: var(--text); color: var(--bg); }
+    .btn-light { background: var(--bg);   color: var(--text); }
 
-    /* HERO SECTION */
+    /* HERO */
     .hero {
-      padding: 2.5rem 2.5rem;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 1.2rem;
-      align-items: start;
+      display: flex;
+      justify-content: center;
+      padding: 2.5rem;
+      gap: var(--gap);
     }
 
-    /* LEFT SIDE */
+    /* LEFT COLUMN */
     .hero-left {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap);
+      width: var(--x);
+      flex-shrink: 0;
     }
 
-    /* CARD 1 — big rectangle */
-    .card-main {
+    /* HORIZONTAL RECTANGLE — x wide, x/2 tall */
+    .card-rect {
+      width: var(--x);
+      height: calc(var(--x) / 2 - var(--gap) / 2);
       background: var(--light);
-      border-radius: 18px;
-      padding: 2.5rem 3rem;
-      margin-left: 1.2rem;
-      margin-right: 4.8rem; /* ~1/4 of left margin on the right */
+      border-radius: 16px;
+      padding: 2rem 2.5rem;
       display: flex;
       align-items: flex-end;
-      min-height: 220px;
     }
-    .card-main-title {
-      font-family: var(--font-display);
-      line-height: 0.9;
-      text-align: left;
-    }
-    .card-main-el {
-      display: block;
-      font-size: clamp(4rem, 8vw, 7rem);
-      font-style: italic;
-      font-weight: 300;
-      color: var(--contrast);
-    }
-    .card-main-desastre {
-      display: block;
-      font-size: clamp(4rem, 8vw, 7rem);
-      font-style: normal;
-      font-weight: 400;
-      color: var(--primary);
+    .card-rect-title { font-family: var(--font-display); line-height: 0.9; }
+    .card-rect-el { display: block; font-size: clamp(3rem, 6vw, 5.5rem); font-style: italic; font-weight: 300; color: var(--contrast); }
+    .card-rect-desastre { display: block; font-size: clamp(3rem, 6vw, 5.5rem); font-weight: 400; color: var(--primary); }
+
+    /* SMALL SQUARES ROW */
+    .hero-squares {
+      display: flex;
+      gap: var(--gap);
+      width: var(--x);
     }
 
-    /* BOTTOM TWO SQUARES */
-    .hero-squares {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.2rem;
-      margin-left: 1.2rem;
-    }
-    .card-square {
+    /* SMALL SQUARE — x/2 wide, x/2 tall */
+    .card-sm {
+      width: calc(var(--x) / 2 - var(--gap) / 2);
+      height: calc(var(--x) / 2 - var(--gap) / 2);
       background: var(--contrast);
-      border-radius: 12px;
-      aspect-ratio: 1;
+      border-radius: 14px;
       display: flex;
       align-items: flex-end;
       padding: 1.2rem 1.5rem;
       position: relative;
       overflow: hidden;
-      min-height: 160px;
+      flex-shrink: 0;
     }
-    .card-square-label {
-      font-family: var(--font-display);
-      font-size: 1.5rem;
-      font-style: italic;
-      font-weight: 300;
-      color: var(--bg);
-      position: relative;
-      z-index: 1;
-    }
-    /* placeholder for future image */
-    .card-square-img {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      opacity: 0.3;
-    }
+    .card-sm-label { font-family: var(--font-display); font-size: 1.4rem; font-style: italic; font-weight: 300; color: var(--bg); position: relative; z-index: 1; }
 
-    /* RIGHT SIDE — tall square */
-    .card-right {
+    /* BIG SQUARE — x wide, x tall */
+    .card-big {
+      width: var(--x);
+      height: var(--x);
       background: var(--contrast);
-      border-radius: 14px;
+      border-radius: 16px;
       padding: 2rem 1.8rem;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      /* match height: card-main + gap + two squares */
-      align-self: stretch;
-      min-width: 220px;
-      max-width: 260px;
+      flex-shrink: 0;
     }
-    .card-right-text {
-      font-family: var(--font-display);
-      font-size: 1.3rem;
-      font-style: italic;
-      font-weight: 300;
-      color: var(--bg);
-      line-height: 1.35;
-      flex: 1;
-      display: flex;
-      align-items: center;
-    }
-    .card-right-btns {
-      display: flex;
-      flex-direction: column;
-      gap: 0.6rem;
-    }
-    .card-right-btns .btn {
-      width: 100%;
-    }
+    .card-big-text { font-family: var(--font-display); font-size: 1.3rem; font-style: italic; font-weight: 300; color: var(--bg); line-height: 1.35; flex: 1; display: flex; align-items: center; }
+    .card-big-btns { display: flex; flex-direction: column; gap: 0.6rem; }
 
     /* MARQUEE */
     .marquee-bar {
@@ -214,10 +167,8 @@
     .marquee-sep { color: var(--accent); }
     @keyframes marquee-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
-    /* TITLE CARD — full width, no background */
-    .title-card {
-      padding: 3.5rem 2.5rem;
-    }
+    /* TITLE CARD */
+    .title-card { padding: 3.5rem 2.5rem; }
     .title-card h3 {
       font-family: var(--font-display);
       font-size: clamp(1.8rem, 3.5vw, 3rem);
@@ -225,28 +176,38 @@
       color: var(--text);
       line-height: 1.2;
     }
-    .title-card h3 em {
-      font-style: italic;
-      color: var(--primary);
-    }
+    .title-card h3 em { font-style: italic; color: var(--primary); }
 
     /* FOOTER */
-    .footer { background: var(--dark); border-top: 0.5px solid #3a3530; padding: 2rem 2.5rem; display: flex; justify-content: space-between; align-items: center; }
+    .footer {
+      background: var(--dark);
+      border-top: 0.5px solid #3a3530;
+      padding: 2rem 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
     .footer-logo { font-family: var(--font-display); font-size: 1.1rem; font-weight: 300; letter-spacing: 0.12em; text-transform: uppercase; color: var(--white); }
     .footer-tagline { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--contrast); }
 
     /* MOBILE */
     @media (max-width: 700px) {
       .nav { justify-content: space-between; }
-      .nav-links { display: none; position: absolute; top: 96px; left: 0; right: 0; background: var(--dark); flex-direction: column; gap: 0; padding: 0.5rem 0; border-bottom: 0.5px solid #3a3530; z-index: 99; }
+      .nav-links {
+        display: none; position: absolute; top: 96px; left: 0; right: 0;
+        background: var(--bg); flex-direction: column; gap: 0;
+        padding: 0.5rem 0; border-bottom: 1px solid var(--contrast); z-index: 99;
+      }
       .nav-links.open { display: flex; }
-      .nav-links li { border-bottom: 0.5px solid #3a3530; }
+      .nav-links li { border-bottom: 0.5px solid var(--light); }
       .nav-links a { display: block; padding: 0.9rem 1.2rem; }
       .nav-toggle { display: block; }
-      .hero { grid-template-columns: 1fr; padding: 1.5rem; }
-      .card-main { margin-left: 0; margin-right: 0; }
-      .hero-squares { margin-left: 0; }
-      .card-right { max-width: 100%; min-width: unset; }
+      .hero { flex-direction: column; align-items: center; padding: 1.5rem; }
+      .hero-left { width: 100%; }
+      .card-rect { width: 100%; height: auto; min-height: 160px; }
+      .hero-squares { width: 100%; }
+      .card-sm { width: calc(50% - var(--gap) / 2); height: auto; aspect-ratio: 1; }
+      .card-big { width: 100%; height: auto; aspect-ratio: 1; }
       .footer { flex-direction: column; gap: 0.5rem; text-align: center; }
     }
   </style>
@@ -268,38 +229,38 @@
     <button class="nav-toggle" aria-label="Abrir menú">&#9776;</button>
   </nav>
 
-  <!-- HERO GRID -->
+  <!-- HERO -->
   <div class="hero">
 
     <!-- LEFT COLUMN -->
     <div class="hero-left">
 
-      <!-- Card 1: big rectangle -->
-      <div class="card-main">
-        <h1 class="card-main-title">
-          <em class="card-main-el">El</em>
-          <span class="card-main-desastre">Desastre</span>
+      <!-- horizontal rectangle -->
+      <div class="card-rect">
+        <h1 class="card-rect-title">
+          <em class="card-rect-el">El</em>
+          <span class="card-rect-desastre">Desastre</span>
         </h1>
       </div>
 
-      <!-- Cards 2 & 3: two squares -->
+      <!-- two small squares -->
       <div class="hero-squares">
-        <a href="patrones.html" class="card-square">
-          <!-- <img class="card-square-img" src="tu-foto.jpg" alt="" /> -->
-          <span class="card-square-label">Patrones</span>
+        <a href="patrones.html" class="card-sm">
+          <!-- <img src="tu-foto.jpg" alt="" /> -->
+          <span class="card-sm-label">Patrones</span>
         </a>
-        <a href="portafolio.html" class="card-square">
-          <!-- <img class="card-square-img" src="tu-foto.jpg" alt="" /> -->
-          <span class="card-square-label">Portafolio</span>
+        <a href="portafolio.html" class="card-sm">
+          <!-- <img src="tu-foto.jpg" alt="" /> -->
+          <span class="card-sm-label">Portafolio</span>
         </a>
       </div>
 
     </div>
 
-    <!-- RIGHT COLUMN: tall card -->
-    <div class="card-right">
-      <p class="card-right-text">Un lugar para aprender, diseñar y crear.</p>
-      <div class="card-right-btns">
+    <!-- BIG SQUARE -->
+    <div class="card-big">
+      <p class="card-big-text">Un lugar para aprender, diseñar y crear.</p>
+      <div class="card-big-btns">
         <a href="trazado.html" class="btn btn-dark">Constructor de patrones</a>
         <a href="aprender.html" class="btn btn-light">Tutoriales</a>
       </div>
