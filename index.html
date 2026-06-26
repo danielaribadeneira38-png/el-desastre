@@ -69,21 +69,23 @@
 
     /* BUTTONS */
     .btn {
-      display: inline-block;
-      font-family: var(--font-body);
-      font-size: 0.72rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      padding: 0.75rem 1.5rem;
-      cursor: pointer;
-      border: none;
-      text-align: center;
-      transition: transform 0.15s ease;
-      width: 100%;
-    }
-    .btn:hover { transform: scale(1.04); }
-    .btn-dark  { background: var(--text); color: var(--bg); }
-    .btn-light { background: var(--bg);   color: var(--text); }
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  border: none;
+  text-align: center;
+  transition: transform 0.15s ease;
+  width: auto;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.btn:hover { transform: scale(1.04); }
+.btn-dark  { background: var(--text); color: var(--bg); }
+.btn-light { background: var(--bg);   color: var(--text); }
 
     /* HERO */
     .hero {
