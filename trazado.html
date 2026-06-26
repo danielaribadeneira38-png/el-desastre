@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Constructor de Patrones — El Desastre</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #e9e5e5;
+      --light: #c6cac7;
+      --contrast: #979187;
+      --primary: #768067;
+      --text: #5c5044;
+      --dark: #2a2320;
+      --accent: #8a9e7a;
+      --white: #f5f3f0;
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-body: 'DM Sans', system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-weight: 300;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .top-bar {
+      background: var(--primary);
+      height: 36px;
+    }
+
+    .nav {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      padding: 0 2.5rem;
+      border-bottom: 1px solid var(--contrast);
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-right: auto;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--contrast);
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .page-header {
+      padding: 3rem 2.5rem 1rem;
+      text-align: center;
+    }
+
+    .page-header h1 {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 8vw, 6rem);
+      font-weight: 300;
+      color: var(--primary);
+    }
+
+    .page-header p {
+      max-width: 620px;
+      margin: 0.8rem auto 0;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    .selector-area {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(220px, 1fr));
+      gap: 1rem;
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 2.5rem;
+    }
+
+    .selector-box {
+      background: var(--light);
+      padding: 1.4rem;
+      border-radius: 18px;
+    }
+
+    .selector-box label {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 1.7rem;
+      font-style: italic;
+      margin-bottom: 0.8rem;
+    }
+
+    select {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid var(--contrast);
+      border-radius: 20px;
+      background: var(--white);
+      color: var(--text);
+      font-family: var(--font-body);
+    }
+
+    .pattern-card {
+      display: none;
+      max-width: 1100px;
+      margin: 2rem auto 4rem;
+      padding: 2rem;
+      background: var(--white);
+      border-radius: 22px;
+      border: 1px solid var(--light);
+    }
+
+    .pattern-card.active { display: block; }
+
+    .pattern-title {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      font-weight: 300;
+      color: var(--primary);
+      margin-bottom: 1.5rem;
+    }
+
+    .pattern-content {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .measurements {
+      background: var(--bg);
+      border-radius: 18px;
+      padding: 1.4rem;
+    }
+
+    .measurements h3,
+    .preview h3 {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 300;
+      margin-bottom: 1rem;
+    }
+
+    .measurement-row {
+      display: grid;
+      grid-template-columns: 1fr 90px;
+      gap: 0.7rem;
+      align-items: center;
+      margin-bottom: 0.8rem;
+    }
+
+    .measurement-row label {
+      font-size: 0.85rem;
+    }
+
+    .measurement-row input {
+      width: 100%;
+      padding: 0.55rem;
+      border: 1px solid var(--contrast);
+      border-radius: 12px;
+      background: var(--white);
+    }
+
+    .trace-btn {
+      width: 100%;
+      margin-top: 1rem;
+      padding: 0.8rem 1rem;
+      border: none;
+      border-radius: 22px;
+      background: var(--text);
+      color: var(--bg);
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .preview {
+      background: var(--light);
+      border-radius: 18px;
+      padding: 1.4rem;
+      min-height: 420px;
+    }
+
+    .pattern-preview {
+      width: 100%;
+      height: 360px;
+      background: var(--white);
+      border-radius: 14px;
+      border: 1px dashed var(--contrast);
+    }
+
+    .placeholder-text {
+      margin-top: 0.8rem;
+      font-size: 0.8rem;
+      color: var(--text);
+      opacity: 0.8;
+    }
+
+    @media (max-width: 800px) {
+      .selector-area,
+      .pattern-content {
+        grid-template-columns: 1fr;
+      }
+
+      .nav {
+        padding: 0 1.2rem;
+      }
+
+      .nav-links {
+        gap: 1rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="top-bar"></div>
+
+  <nav class="nav">
+    <a href="index.html" class="nav-logo">El Desastre</a>
+    <ul class="nav-links">
+      <li><a href="sobre.html">About</a></li>
+      <li><a href="aprender.html">Learning</a></li>
+      <li><a href="portafolio.html">Portfolio</a></li>
+      <li><a href="patrones.html">Patterns</a></li>
+    </ul>
+  </nav>
+
+  <header class="page-header">
+    <h1>Constructor de patrones</h1>
+    <p>Selecciona una base, ingresa las medidas necesarias y traza un patrón inicial.</p>
+  </header>
+
+  <section class="selector-area">
+    <div class="selector-box">
+      <label for="topSelect">Tops</label>
+      <select id="topSelect">
+        <option value="">Seleccionar</option>
+        <option value="bodice">Basic bodice</option>
+      </select>
+    </div>
+
+    <div class="selector-box">
+      <label for="bottomSelect">Bottoms</label>
+      <select id="bottomSelect">
+        <option value="">Seleccionar</option>
+        <option value="skirt">Basic skirt</option>
+      </select>
+    </div>
+  </section>
+
+  <section id="patternCard" class="pattern-card">
+    <h2 id="patternTitle" class="pattern-title">Basic bodice</h2>
+
+    <div class="pattern-content">
+      <div class="measurements">
+        <h3>Medidas necesarias</h3>
+        <div id="measurementList"></div>
+        <button class="trace-btn" onclick="drawPattern()">Trazar patrón</button>
+      </div>
+
+      <div class="preview">
+        <h3>Vista del patrón</h3>
+
+        <svg id="patternPreview" class="pattern-preview" viewBox="0 0 500 360">
+          <text x="250" y="180" text-anchor="middle" fill="#979187" font-size="16">
+            Aquí aparecerá el patrón
+          </text>
+        </svg>
+
+        <p class="placeholder-text">
+          Por ahora esta imagen es una base visual. Luego conectamos aquí tus cálculos reales.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const topSelect = document.getElementById("topSelect");
+    const bottomSelect = document.getElementById("bottomSelect");
+    const patternCard = document.getElementById("patternCard");
+    const patternTitle = document.getElementById("patternTitle");
+    const measurementList = document.getElementById("measurementList");
+    const patternPreview = document.getElementById("patternPreview");
+
+    const patterns = {
+      bodice: {
+        title: "Basic bodice",
+        measurements: [
+          "Busto",
+          "Cintura",
+          "Contorno de cuello",
+          "Ancho de espalda",
+          "Ancho de hombro",
+          "Largo talle delantero",
+          "Largo talle espalda",
+          "Altura de busto",
+          "Separación de busto"
+        ]
+      },
+      skirt: {
+        title: "Basic skirt",
+        measurements: [
+          "Cintura",
+          "Cadera",
+          "Altura de cadera",
+          "Largo de falda"
+        ]
+      }
+    };
+
+    function showPattern(type) {
+      if (!type) return;
+
+      const selectedPattern = patterns[type];
+
+      patternCard.classList.add("active");
+      patternTitle.textContent = selectedPattern.title;
+
+      measurementList.innerHTML = "";
+
+      selectedPattern.measurements.forEach((measurement) => {
+        const row = document.createElement("div");
+        row.className = "measurement-row";
+
+        row.innerHTML = `
+          <label>${measurement}</label>
+          <input type="number" placeholder="cm" />
+        `;
+
+        measurementList.appendChild(row);
+      });
+
+      patternPreview.innerHTML = `
+        <text x="250" y="180" text-anchor="middle" fill="#979187" font-size="16">
+          Presiona “Trazar patrón”
+        </text>
+      `;
+    }
+
+    topSelect.addEventListener("change", function () {
+      bottomSelect.value = "";
+      showPattern(this.value);
+    });
+
+    bottomSelect.addEventListener("change", function () {
+      topSelect.value = "";
+      showPattern(this.value);
+    });
+
+    function drawPattern() {
+      patternPreview.innerHTML = `
+        <path d="M 170 60 L 330 60 L 360 300 L 140 300 Z"
+              fill="none"
+              stroke="#5c5044"
+              stroke-width="3" />
+
+        <line x1="170" y1="120" x2="330" y2="120"
+              stroke="#979187"
+              stroke-width="1"
+              stroke-dasharray="6 6" />
+
+        <line x1="155" y1="210" x2="345" y2="210"
+              stroke="#979187"
+              stroke-width="1"
+              stroke-dasharray="6 6" />
+
+        <circle cx="250" cy="60" r="4" fill="#768067" />
+        <circle cx="140" cy="300" r="4" fill="#768067" />
+        <circle cx="360" cy="300" r="4" fill="#768067" />
+
+        <text x="250" y="340" text-anchor="middle" fill="#5c5044" font-size="14">
+          Patrón base preliminar
+        </text>
+      `;
+    }
+  </script>
+
+</body>
+</html>
