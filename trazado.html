@@ -388,129 +388,204 @@
       }
     }
 
-    function drawSkirt() {
-      const cintura = Number(document.getElementById("cintura").value);
-      const cadera = Number(document.getElementById("cadera").value);
-      const alto = Number(document.getElementById("alto").value);
-      const largo = Number(document.getElementById("largo").value);
-      const pretina = Number(document.getElementById("pretina").value);
+   function drawSkirt() {
+  const cintura = Number(document.getElementById("cintura").value);
+  const cadera = Number(document.getElementById("cadera").value);
+  const alto = Number(document.getElementById("alto").value);
+  const largo = Number(document.getElementById("largo").value);
+  const pretina = Number(document.getElementById("pretina").value);
 
-      if (!cintura || !cadera || !alto || !largo || !pretina) {
-        alert("Por favor ingresa todas las medidas.");
-        return;
-      }
+  if (!cintura || !cadera || !alto || !largo || !pretina) {
+    alert("Por favor ingresa todas las medidas.");
+    return;
+  }
 
-      const scale = 6;
-      const x0 = 120;
-      const y0 = 70;
+  const scale = 5;
+  const seam = 1 * scale;
 
-      const B = { x: x0, y: y0 };
-      const O = { x: B.x + (cintura / 8) * scale, y: y0 };
-      const O2 = { x: O.x + 3 * scale, y: y0 };
-      const M = { x: O2.x + (cintura / 8) * scale, y: y0 };
+  function skirtPiece(x0, y0, mirror = false, title = "DELANTERO") {
+    const direction = mirror ? -1 : 1;
 
-      const K = { x: B.x, y: B.y + alto * scale };
-      const L = { x: K.x + (cintura / 8 + 1.5) * scale, y: K.y };
-      const J = { x: K.x + (cadera / 4) * scale, y: K.y };
+    const B = { x: x0, y: y0 };
+    const O = { x: B.x + direction * (cintura / 8) * scale, y: y0 };
+    const O2 = { x: O.x + direction * 3 * scale, y: y0 };
+    const M = { x: O2.x + direction * (cintura / 8) * scale, y: y0 };
 
-      const P = { x: B.x, y: B.y + largo * scale };
-      const R = { x: P.x + (cadera / 4) * scale, y: P.y };
+    const K = { x: B.x, y: B.y + alto * scale };
+    const L = { x: K.x + direction * (cintura / 8 + 1.5) * scale, y: K.y };
+    const J = { x: K.x + direction * (cadera / 4) * scale, y: K.y };
 
-      const seam = 1 * scale;
-      const waistY = B.y + pretina * scale;
+    const P = { x: B.x, y: B.y + largo * scale };
+    const R = { x: P.x + direction * (cadera / 4) * scale, y: P.y };
 
-      const label = (name, p) => `
-        <text x="${p.x - 10}" y="${p.y - 8}" fill="#768067" font-size="14">${name}</text>
-      `;
+    const curveControl = {
+      x: J.x + direction * 12,
+      y: J.y + 35
+    };
 
-      const point = (p) => `
-        <circle cx="${p.x}" cy="${p.y}" r="3" fill="#768067" />
-      `;
+    const waistY = B.y + pretina * scale;
 
-      patternPreview.innerHTML = `
-        <!-- Seam allowance approximation -->
-        <path
-          d="
-            M ${B.x - seam} ${B.y - seam}
-            L ${M.x + seam} ${M.y - seam}
-            Q ${J.x + seam + 12} ${J.y + 35} ${J.x + seam} ${J.y}
-            L ${R.x + seam} ${R.y + seam}
-            L ${P.x - seam} ${P.y + seam}
-            Z
-          "
-          fill="none"
-          stroke="#8a9e7a"
-          stroke-width="2"
-          stroke-dasharray="8 6"
-        />
+    const minX = Math.min(B.x, M.x, J.x, R.x);
+    const maxX = Math.max(B.x, M.x, J.x, R.x);
 
-        <!-- Main pattern outline -->
-        <path
-          d="
-            M ${B.x} ${B.y}
-            L ${M.x} ${M.y}
-            Q ${J.x + 10} ${J.y + 30} ${J.x} ${J.y}
-            L ${R.x} ${R.y}
-            L ${P.x} ${P.y}
-            Z
-          "
-          fill="none"
-          stroke="#5c5044"
-          stroke-width="3"
-        />
+    return `
+      <text x="${(minX + maxX) / 2}" y="${y0 - 35}" text-anchor="middle" fill="#5c5044" font-size="18">
+        ${title}
+      </text>
 
-        <!-- Hip line -->
-        <line x1="${K.x}" y1="${K.y}" x2="${J.x}" y2="${J.y}"
-          stroke="#979187" stroke-width="1.5" stroke-dasharray="8 6" />
+      <!-- Margen de costura -->
+      <path
+        d="
+          M ${B.x - direction * seam} ${B.y - seam}
+          L ${M.x + direction * seam} ${M.y - seam}
+          Q ${curveControl.x + direction * seam} ${curveControl.y}
+            ${J.x + direction * seam} ${J.y}
+          L ${R.x + direction * seam} ${R.y + seam}
+          L ${P.x - direction * seam} ${P.y + seam}
+          Z
+        "
+        fill="none"
+        stroke="#8a9e7a"
+        stroke-width="2"
+        stroke-dasharray="8 6"
+      />
 
-        <!-- Dart -->
-        <line x1="${O.x}" y1="${O.y}" x2="${L.x}" y2="${L.y}"
-          stroke="#5c5044" stroke-width="2" />
-        <line x1="${O2.x}" y1="${O2.y}" x2="${L.x}" y2="${L.y}"
-          stroke="#5c5044" stroke-width="2" />
+      <!-- Patrón principal -->
+      <path
+        d="
+          M ${B.x} ${B.y}
+          L ${M.x} ${M.y}
+          Q ${curveControl.x} ${curveControl.y} ${J.x} ${J.y}
+          L ${R.x} ${R.y}
+          L ${P.x} ${P.y}
+          Z
+        "
+        fill="none"
+        stroke="#5c5044"
+        stroke-width="3"
+      />
 
-        <!-- Waistband cut line -->
-        <line x1="${B.x}" y1="${waistY}" x2="${M.x}" y2="${waistY}"
-          stroke="#979187" stroke-width="1.5" stroke-dasharray="5 5" />
+      <!-- Línea de cadera -->
+      <line x1="${K.x}" y1="${K.y}" x2="${J.x}" y2="${J.y}"
+        stroke="#979187" stroke-width="1.5" stroke-dasharray="8 6" />
 
-        <!-- Points -->
-        ${point(B)} ${point(O)} ${point(O2)} ${point(M)}
-        ${point(K)} ${point(L)} ${point(J)} ${point(P)} ${point(R)}
+      <!-- Pinza -->
+      <line x1="${O.x}" y1="${O.y}" x2="${L.x}" y2="${L.y}"
+        stroke="#5c5044" stroke-width="2" />
+      <line x1="${O2.x}" y1="${O2.y}" x2="${L.x}" y2="${L.y}"
+        stroke="#5c5044" stroke-width="2" />
 
-        <!-- Labels -->
-        ${label("B", B)}
-        ${label("O", O)}
-        ${label("O₂", O2)}
-        ${label("M", M)}
-        ${label("K", K)}
-        ${label("L", L)}
-        ${label("J", J)}
-        ${label("P", P)}
-        ${label("R", R)}
+      <!-- Línea de corte de pretina -->
+      <path
+        d="M ${B.x} ${waistY} Q ${(B.x + M.x) / 2} ${waistY + 6} ${M.x} ${waistY}"
+        fill="none"
+        stroke="#979187"
+        stroke-width="1.5"
+        stroke-dasharray="5 5"
+      />
 
-        <!-- Waistband piece preview -->
-        <rect
-          x="${B.x}"
-          y="${P.y + 60}"
-          width="${M.x - B.x}"
-          height="${pretina * scale}"
-          fill="none"
-          stroke="#5c5044"
-          stroke-width="3"
-        />
+      ${drawPoint("B", B)}
+      ${drawPoint("O", O)}
+      ${drawPoint("O₂", O2)}
+      ${drawPoint("M", M)}
+      ${drawPoint("K", K)}
+      ${drawPoint("L", L)}
+      ${drawPoint("J", J)}
+      ${drawPoint("P", P)}
+      ${drawPoint("R", R)}
+    `;
+  }
 
-        <text x="${B.x}" y="${P.y + 45}" fill="#5c5044" font-size="15">
-          Pretina
-        </text>
+  function drawPoint(name, p) {
+    return `
+      <circle cx="${p.x}" cy="${p.y}" r="3" fill="#768067" />
+      <text x="${p.x - 8}" y="${p.y - 8}" fill="#768067" font-size="14">${name}</text>
+    `;
+  }
 
-        <text x="400" y="760" text-anchor="middle" fill="#979187" font-size="14">
-          Línea café = patrón · línea verde = margen de costura 1 cm
-        </text>
-      `;
+  function anatomicalWaistband() {
+    const x = 150;
+    const y = 560;
+    const width = 480;
+    const height = pretina * scale;
 
-      document.getElementById("pdfButton").style.display = "block";
-    }
+    return `
+      <text x="${x}" y="${y - 20}" fill="#5c5044" font-size="17">
+        Pretina anatómica
+      </text>
 
+      <!-- Margen pretina -->
+      <path
+        d="
+          M ${x - seam} ${y - seam}
+          Q ${x + width / 2} ${y - 35} ${x + width + seam} ${y - seam}
+          L ${x + width + seam} ${y + height + seam}
+          Q ${x + width / 2} ${y + height + 35} ${x - seam} ${y + height + seam}
+          Z
+        "
+        fill="none"
+        stroke="#8a9e7a"
+        stroke-width="2"
+        stroke-dasharray="8 6"
+      />
+
+      <!-- Pretina principal anatómica -->
+      <path
+        d="
+          M ${x} ${y}
+          Q ${x + width / 2} ${y - 28} ${x + width} ${y}
+          L ${x + width} ${y + height}
+          Q ${x + width / 2} ${y + height + 28} ${x} ${y + height}
+          Z
+        "
+        fill="none"
+        stroke="#5c5044"
+        stroke-width="3"
+      />
+
+      <!-- Línea central de pretina -->
+      <path
+        d="
+          M ${x} ${y + height / 2}
+          Q ${x + width / 2} ${y + height / 2} ${x + width} ${y + height / 2}
+        "
+        fill="none"
+        stroke="#979187"
+        stroke-width="1.5"
+        stroke-dasharray="8 6"
+      />
+
+      <text x="${x}" y="${y + height + 35}" fill="#5c5044" font-size="13">
+        Extremo trasero
+      </text>
+
+      <text x="${x + width}" y="${y + height + 35}" text-anchor="end" fill="#5c5044" font-size="13">
+        Extremo delantero
+      </text>
+
+      <text x="${x + width / 2}" y="${y - 40}" text-anchor="middle" fill="#5c5044" font-size="13">
+        Centro espalda
+      </text>
+
+      <text x="${x + width / 2}" y="${y + height + 55}" text-anchor="middle" fill="#5c5044" font-size="13">
+        Centro frente
+      </text>
+    `;
+  }
+
+  patternPreview.innerHTML = `
+    ${skirtPiece(90, 90, false, "DELANTERO")}
+    ${skirtPiece(650, 90, true, "TRASERO")}
+
+    ${anatomicalWaistband()}
+
+    <text x="400" y="760" text-anchor="middle" fill="#979187" font-size="14">
+      Línea café = patrón · línea verde = margen de costura 1 cm
+    </text>
+  `;
+
+  document.getElementById("pdfButton").style.display = "block";
+}
     function drawBodice() {
       patternPreview.innerHTML = `
         <text x="400" y="400" text-anchor="middle" fill="#979187" font-size="20">
