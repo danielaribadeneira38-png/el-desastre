@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Constructor de Patrones — El Desastre</title>
-
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
@@ -23,14 +22,7 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-body);
-      font-weight: 300;
-    }
-
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-weight: 300; }
     a { color: inherit; text-decoration: none; }
 
     .top-bar { background: var(--primary); height: 36px; }
@@ -42,7 +34,6 @@
       padding: 0 2.5rem;
       border-bottom: 1px solid var(--contrast);
     }
-
     .nav-logo {
       font-family: var(--font-display);
       font-size: 1.3rem;
@@ -50,37 +41,13 @@
       text-transform: uppercase;
       margin-right: auto;
     }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--contrast); }
+    .nav-links a:hover { color: var(--text); }
 
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-      list-style: none;
-    }
-
-    .nav-links a {
-      font-size: 0.72rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--contrast);
-    }
-
-    .page-header {
-      padding: 3rem 2.5rem 1rem;
-      text-align: center;
-    }
-
-    .page-header h1 {
-      font-family: var(--font-display);
-      font-size: clamp(3rem, 8vw, 6rem);
-      font-weight: 300;
-      color: var(--primary);
-    }
-
-    .page-header p {
-      max-width: 620px;
-      margin: 0.8rem auto 0;
-      line-height: 1.6;
-    }
+    .page-header { padding: 3rem 2.5rem 1rem; text-align: center; }
+    .page-header h1 { font-family: var(--font-display); font-size: clamp(3rem, 8vw, 6rem); font-weight: 300; color: var(--primary); }
+    .page-header p { max-width: 620px; margin: 0.8rem auto 0; line-height: 1.6; }
 
     .selector-area {
       display: grid;
@@ -90,22 +57,8 @@
       margin: 2rem auto;
       padding: 0 2.5rem;
     }
-
-    .selector-box {
-      background: var(--white);
-      padding: 1.5rem;
-      border-radius: 18px;
-      border: 1px solid rgba(92,80,68,0.08);
-    }
-
-    .selector-box label {
-      display: block;
-      font-family: var(--font-display);
-      font-size: 1.7rem;
-      font-style: italic;
-      font-weight: 300;
-      margin-bottom: 0.8rem;
-    }
+    .selector-box { background: var(--white); padding: 1.5rem; border-radius: 18px; border: 1px solid rgba(92,80,68,0.08); }
+    .selector-box label { display: block; font-family: var(--font-display); font-size: 1.7rem; font-style: italic; font-weight: 300; margin-bottom: 0.8rem; }
 
     select {
       width: 100%;
@@ -124,9 +77,7 @@
       background-image:
         linear-gradient(45deg, transparent 50%, var(--primary) 50%),
         linear-gradient(135deg, var(--primary) 50%, transparent 50%);
-      background-position:
-        calc(100% - 22px) center,
-        calc(100% - 15px) center;
+      background-position: calc(100% - 22px) center, calc(100% - 15px) center;
       background-size: 7px 7px, 7px 7px;
       background-repeat: no-repeat;
     }
@@ -140,16 +91,9 @@
       border-radius: 22px;
       border: 1px solid var(--light);
     }
-
     .pattern-card.active { display: block; }
 
-    .pattern-title {
-      font-family: var(--font-display);
-      font-size: 2.5rem;
-      font-weight: 300;
-      color: var(--primary);
-      margin-bottom: 1.5rem;
-    }
+    .pattern-title { font-family: var(--font-display); font-size: 2.5rem; font-weight: 300; color: var(--primary); margin-bottom: 1.5rem; }
 
     .pattern-content {
       display: grid;
@@ -158,19 +102,8 @@
       align-items: start;
     }
 
-    .measurements {
-      background: var(--bg);
-      border-radius: 18px;
-      padding: 1.4rem;
-    }
-
-    .measurements h3,
-    .preview h3 {
-      font-family: var(--font-display);
-      font-size: 1.6rem;
-      font-weight: 300;
-      margin-bottom: 1rem;
-    }
+    .measurements { background: var(--bg); border-radius: 18px; padding: 1.4rem; }
+    .measurements h3, .preview h3 { font-family: var(--font-display); font-size: 1.6rem; font-weight: 300; margin-bottom: 1rem; }
 
     .measurement-row {
       display: grid;
@@ -179,7 +112,6 @@
       align-items: center;
       margin-bottom: 0.8rem;
     }
-
     .measurement-row input {
       width: 100%;
       padding: 0.55rem;
@@ -201,33 +133,23 @@
       text-transform: uppercase;
       cursor: pointer;
     }
-
     .trace-btn + .trace-btn { margin-top: 0.5rem; }
 
-    .preview {
-      background: var(--light);
-      border-radius: 18px;
-      padding: 1.4rem;
-      min-height: 420px;
-    }
+    .preview { background: var(--light); border-radius: 18px; padding: 1.4rem; min-height: 420px; }
 
     .pattern-preview {
       width: 100%;
-      height: 500px;
+      height: 600px;
       background: var(--white);
       border-radius: 14px;
       border: 1px dashed var(--contrast);
     }
 
     @media (max-width: 800px) {
-      .selector-area,
-      .pattern-content {
-        grid-template-columns: 1fr;
-      }
+      .selector-area, .pattern-content { grid-template-columns: 1fr; }
     }
   </style>
 </head>
-
 <body>
 
   <div class="top-bar"></div>
@@ -255,7 +177,6 @@
         <option value="bodice">Cuerpo básico</option>
       </select>
     </div>
-
     <div class="selector-box">
       <label for="bottomSelect">Prendas inferiores</label>
       <select id="bottomSelect">
@@ -267,35 +188,17 @@
 
   <section id="patternCard" class="pattern-card">
     <h2 id="patternTitle" class="pattern-title">Seleccione un patrón</h2>
-
     <div class="pattern-content">
       <div class="measurements">
         <h3>Medidas necesarias</h3>
         <div id="measurementList"></div>
-
         <button class="trace-btn" onclick="drawPattern()">Trazar patrón</button>
-
-        <button
-          id="pdfButton"
-          class="trace-btn"
-          onclick="downloadPatternPDF()"
-          style="display:none">
-          Descargar PDF A4
-        </button>
+        <button id="pdfButton" class="trace-btn" onclick="downloadPatternPDF()" style="display:none">Descargar PDF A4</button>
       </div>
-
       <div class="preview">
         <h3>Vista del patrón</h3>
-
-        <svg
-          id="patternPreview"
-          class="pattern-preview"
-          viewBox="0 0 800 800"
-          preserveAspectRatio="xMidYMid meet">
-
-          <text x="400" y="400" text-anchor="middle" fill="#979187" font-size="20">
-            Aquí aparecerá el patrón
-          </text>
+        <svg id="patternPreview" class="pattern-preview" viewBox="0 0 800 900" preserveAspectRatio="xMidYMid meet">
+          <text x="400" y="450" text-anchor="middle" fill="#979187" font-size="20">Aquí aparecerá el patrón</text>
         </svg>
       </div>
     </div>
@@ -314,16 +217,9 @@
         title: "Cuerpo básico",
         measurements: ["Busto", "Cintura", "Contorno de cuello"]
       },
-
       skirt: {
         title: "Falda básica",
-        measurements: [
-          "Contorno cintura",
-          "Contorno cadera",
-          "Alto cadera",
-          "Largo total",
-          "Pretina"
-        ]
+        measurements: ["Contorno cintura", "Contorno cadera", "Alto cadera", "Largo total", "Pretina"]
       }
     };
 
@@ -337,362 +233,227 @@
 
     function showPattern(type) {
       if (!type) return;
-
       const selectedPattern = patterns[type];
-
       patternCard.classList.add("active");
       patternTitle.textContent = selectedPattern.title;
       measurementList.innerHTML = "";
       document.getElementById("pdfButton").style.display = "none";
-
       selectedPattern.measurements.forEach((measurement) => {
         const row = document.createElement("div");
         row.className = "measurement-row";
-
         const inputId = ids[measurement] || measurement.toLowerCase().replaceAll(" ", "-");
-
-        row.innerHTML = `
-          <label>${measurement}</label>
-          <input id="${inputId}" type="number" placeholder="cm">
-        `;
-
+        row.innerHTML = `<label>${measurement}</label><input id="${inputId}" type="number" placeholder="cm">`;
         measurementList.appendChild(row);
       });
-
-      patternPreview.innerHTML = `
-        <text x="400" y="400" text-anchor="middle" fill="#979187" font-size="20">
-          Presiona “Trazar patrón”
-        </text>
-      `;
+      patternPreview.innerHTML = `<text x="400" y="450" text-anchor="middle" fill="#979187" font-size="20">Presiona "Trazar patrón"</text>`;
     }
 
-    topSelect.addEventListener("change", function () {
-      bottomSelect.value = "";
-      showPattern(this.value);
-    });
-
-    bottomSelect.addEventListener("change", function () {
-      topSelect.value = "";
-      showPattern(this.value);
-    });
+    topSelect.addEventListener("change", function () { bottomSelect.value = ""; showPattern(this.value); });
+    bottomSelect.addEventListener("change", function () { topSelect.value = ""; showPattern(this.value); });
 
     function drawPattern() {
-      if (bottomSelect.value === "skirt") {
-        drawSkirt();
-        return;
-      }
-
-      if (topSelect.value === "bodice") {
-        drawBodice();
-        return;
-      }
+      if (bottomSelect.value === "skirt") { drawSkirt(); return; }
+      if (topSelect.value === "bodice") { drawBodice(); return; }
     }
 
-   function drawSkirt() {
-  const cintura = Number(document.getElementById("cintura").value);
-  const cadera = Number(document.getElementById("cadera").value);
-  const alto = Number(document.getElementById("alto").value);
-  const largo = Number(document.getElementById("largo").value);
-  const pretina = Number(document.getElementById("pretina").value);
+    function drawSkirt() {
+      const cintura = Number(document.getElementById("cintura").value);
+      const cadera  = Number(document.getElementById("cadera").value);
+      const alto    = Number(document.getElementById("alto").value);
+      const largo   = Number(document.getElementById("largo").value);
+      const pretina = Number(document.getElementById("pretina").value);
 
-  if (!cintura || !cadera || !alto || !largo || !pretina) {
-    alert("Por favor ingresa todas las medidas.");
-    return;
-  }
+      if (!cintura || !cadera || !alto || !largo || !pretina) {
+        alert("Por favor ingresa todas las medidas.");
+        return;
+      }
 
-  const scale = 5;
-  const seam = 1 * scale;
+      const scale = 5;
+      const seam  = 1 * scale;
 
-  function skirtPiece(x0, y0, mirror = false, title = "DELANTERO") {
-    const direction = mirror ? -1 : 1;
+      function drawDot(p) {
+        return `<circle cx="${p.x}" cy="${p.y}" r="2.5" fill="#768067" />`;
+      }
 
-    const B = { x: x0, y: y0 };
-    const O = { x: B.x + direction * (cintura / 8) * scale, y: y0 };
-    const O2 = { x: O.x + direction * 3 * scale, y: y0 };
-    const M = { x: O2.x + direction * (cintura / 8) * scale, y: y0 };
+      // ── waistband at the top ──────────────────────────────────────────
+      function anatomicalWaistband() {
+        const wbTop    = 30;
+        const wbHeight = pretina * scale;
+        const halfWaist = (cintura / 8) * scale;
+        const startX   = 90;
+        const pieceGap = 4;
+        const baseAngle = -8;
+        const dartCloseAngle = 14;
 
-    const K = { x: B.x, y: B.y + alto * scale };
-    const L = { x: K.x + direction * (cintura / 8 + 1.5) * scale, y: K.y };
-    const J = { x: K.x + direction * (cadera / 4) * scale, y: K.y };
+        const pieces = [
+          { name: "1", width: halfWaist, angle: baseAngle },
+          { name: "2", width: halfWaist, angle: baseAngle + dartCloseAngle },
+          { name: "3", width: halfWaist, angle: baseAngle + dartCloseAngle * 1.6 },
+          { name: "4", width: halfWaist, angle: baseAngle + dartCloseAngle * 2.2 }
+        ];
 
-    const P = { x: B.x, y: B.y + largo * scale };
-    const R = { x: P.x + direction * (cadera / 4) * scale, y: P.y };
+        function degToRad(deg) { return deg * Math.PI / 180; }
 
-    const curveControl = {
-      x: J.x + direction * 12,
-      y: J.y + 35
-    };
+        function rotatePoint(px, py, originX, originY, angleDeg) {
+          const angle = degToRad(angleDeg);
+          const dx = px - originX;
+          const dy = py - originY;
+          return {
+            x: originX + dx * Math.cos(angle) - dy * Math.sin(angle),
+            y: originY + dx * Math.sin(angle) + dy * Math.cos(angle)
+          };
+        }
 
-    const waistY = B.y + pretina * scale;
+        function drawPiece(x, y, width, height, angle, name) {
+          // upside down: seam edge at top, waist edge at bottom
+          const origin = { x, y: y + height };
 
-    const minX = Math.min(B.x, M.x, J.x, R.x);
-    const maxX = Math.max(B.x, M.x, J.x, R.x);
+          const p1 = { x: x,         y: y + height }; // bottom-left  (waist)
+          const p2 = { x: x + width, y: y + height }; // bottom-right (waist)
+          const p3 = { x: x + width, y: y };          // top-right    (seam)
+          const p4 = { x: x,         y: y };          // top-left     (seam)
 
-    return `
-      <text x="${(minX + maxX) / 2}" y="${y0 - 35}" text-anchor="middle" fill="#5c5044" font-size="18">
-        ${title}
-      </text>
+          const r = (pt) => rotatePoint(pt.x, pt.y, origin.x, origin.y, angle);
+          const rp1 = r(p1), rp2 = r(p2), rp3 = r(p3), rp4 = r(p4);
 
-      <!-- Margen de costura -->
-      <path
-        d="
-          M ${B.x - direction * seam} ${B.y - seam}
-          L ${M.x + direction * seam} ${M.y - seam}
-          Q ${curveControl.x + direction * seam} ${curveControl.y}
-            ${J.x + direction * seam} ${J.y}
-          L ${R.x + direction * seam} ${R.y + seam}
-          L ${P.x - direction * seam} ${P.y + seam}
-          Z
-        "
-        fill="none"
-        stroke="#8a9e7a"
-        stroke-width="2"
-        stroke-dasharray="8 6"
-      />
+          const labelX = (rp1.x + rp2.x + rp3.x + rp4.x) / 4;
+          const labelY = (rp1.y + rp2.y + rp3.y + rp4.y) / 4;
 
-      <!-- Patrón principal -->
-<path
-  d="
-    M ${B.x} ${waistY}
-    L ${P.x} ${P.y}
-    L ${R.x} ${R.y}
-    L ${J.x} ${J.y}
-    Q ${curveControl.x} ${curveControl.y} ${M.x} ${waistY}
-    Z
-  "
-  fill="none"
-  stroke="#5c5044"
-  stroke-width="1.7"
-/>
-<!-- Línea original de cintura, referencia -->
-<line
-  x1="${B.x}"
-  y1="${B.y}"
-  x2="${M.x}"
-  y2="${M.y}"
-  stroke="#979187"
-  stroke-width="1"
-  stroke-dasharray="6 6"
-/>
+          const s = seam;
+          const s1 = r({ x: x - s,         y: y + height + s });
+          const s2 = r({ x: x + width + s,  y: y + height + s });
+          const s3 = r({ x: x + width + s,  y: y - s });
+          const s4 = r({ x: x - s,          y: y - s });
 
-      <!-- Línea de cadera -->
-      <line x1="${K.x}" y1="${K.y}" x2="${J.x}" y2="${J.y}"
-        stroke="#979187" stroke-width="1.5" stroke-dasharray="8 6" />
+          return `
+            <path d="M ${s1.x} ${s1.y} L ${s2.x} ${s2.y} L ${s3.x} ${s3.y} L ${s4.x} ${s4.y} Z"
+              fill="none" stroke="#8a9e7a" stroke-width="1.5" stroke-dasharray="8 6" />
+            <path d="M ${rp1.x} ${rp1.y} L ${rp2.x} ${rp2.y} L ${rp3.x} ${rp3.y} L ${rp4.x} ${rp4.y} Z"
+              fill="none" stroke="#5c5044" stroke-width="2" />
+            <text x="${labelX}" y="${labelY + 5}" text-anchor="middle" fill="#5c5044" font-size="12">${name}</text>
+          `;
+        }
 
-      <!-- Pinza -->
-<line x1="${O.x}" y1="${waistY}" x2="${L.x}" y2="${L.y}"
-  stroke="#5c5044" stroke-width="1.5" />
-<line x1="${O2.x}" y1="${waistY}" x2="${L.x}" y2="${L.y}"
-  stroke="#5c5044" stroke-width="1.5" />
+        let curX = startX;
+        let curY = wbTop + wbHeight;
+        let result = "";
 
-      <!-- Línea de corte de pretina -->
-<path
-  d="M ${B.x} ${waistY} Q ${(B.x + M.x) / 2} ${waistY + 4} ${M.x} ${waistY}"
-  fill="none"
-  stroke="#5c5044"
-  stroke-width="1.4"
-/>
+        pieces.forEach((piece) => {
+          result += drawPiece(curX, wbTop, piece.width, wbHeight, piece.angle, piece.name);
+          const origin = { x: curX, y: curY };
+          const endPt = rotatePoint(curX + piece.width, curY, origin.x, origin.y, piece.angle);
 
-     ${drawDot(B)}
-     ${drawDot(O)}
-     ${drawDot(O2)}
-     ${drawDot(M)}
-     ${drawDot(K)}
-     ${drawDot(L)}
-     ${drawDot(J)}
-     ${drawDot(P)}
-     ${drawDot(R)}
-    `;
-  }
+          function rotatePoint(px, py, ox, oy, deg) {
+            const a = deg * Math.PI / 180;
+            const dx = px - ox, dy = py - oy;
+            return { x: ox + dx * Math.cos(a) - dy * Math.sin(a), y: oy + dx * Math.sin(a) + dy * Math.cos(a) };
+          }
 
-function drawDot(p) {
-  return `<circle cx="${p.x}" cy="${p.y}" r="2.5" fill="#768067" />`;
-}
-function anatomicalWaistband() {
-  const y = 560;
-  const pretinaHeight = pretina * scale;
+          curX = endPt.x + pieceGap;
+          curY = endPt.y;
+        });
 
-  const dartWidth = 3 * scale;
-  const halfWaist = (cintura / 8) * scale;
+        return `
+          <text x="${startX}" y="${wbTop - 10}" fill="#5c5044" font-size="15">Pretina anatómica</text>
+          ${result}
+        `;
+      }
 
-  const pieceGap = 0;
+      // ── skirt pieces below waistband ──────────────────────────────────
+      const wbBottom = 30 + pretina * scale + 60; // top padding + waistband + gap
 
-  // Visual controls
-  const startX = 110;
-  const baseAngle = -8; // makes the full waistband gently rise
-  const dartCloseAngle = 14; // closes the dart visually
+      function skirtPiece(x0, y0, mirror = false, title = "DELANTERO") {
+        const dir = mirror ? -1 : 1;
 
-  const pieces = [
-    { name: "1", width: halfWaist, angle: baseAngle },
-    { name: "2", width: halfWaist, angle: baseAngle + dartCloseAngle },
-    { name: "3", width: halfWaist, angle: baseAngle + dartCloseAngle * 1.6 },
-    { name: "4", width: halfWaist, angle: baseAngle + dartCloseAngle * 2.2 }
-  ];
+        const B  = { x: x0,                                          y: y0 };
+        const O  = { x: x0 + dir * (cintura / 8) * scale,            y: y0 };
+        const O2 = { x: O.x + dir * 3 * scale,                       y: y0 };
+        const M  = { x: O2.x + dir * (cintura / 8) * scale,          y: y0 };
 
-  function degToRad(deg) {
-    return deg * Math.PI / 180;
-  }
+        const K  = { x: x0,                                          y: y0 + alto * scale };
+        const L  = { x: x0 + dir * (cintura / 8 + 1.5) * scale,      y: y0 + alto * scale };
+        const J  = { x: x0 + dir * (cadera / 4) * scale,             y: y0 + alto * scale };
 
-  function rotatePoint(px, py, originX, originY, angleDeg) {
-    const angle = degToRad(angleDeg);
-    const dx = px - originX;
-    const dy = py - originY;
+        const P  = { x: x0,                                          y: y0 + largo * scale };
+        const R  = { x: x0 + dir * (cadera / 4) * scale,             y: y0 + largo * scale };
 
-    return {
-      x: originX + dx * Math.cos(angle) - dy * Math.sin(angle),
-      y: originY + dx * Math.sin(angle) + dy * Math.cos(angle)
-    };
-  }
+        const curveCtrl = { x: J.x + dir * 12, y: J.y + 35 };
 
-  function drawPiece(x, y, width, height, angle, name) {
-    const p1 = { x: x, y: y };
-    const p2 = { x: x + width, y: y };
-    const p3 = { x: x + width, y: y + height };
-    const p4 = { x: x, y: y + height };
+        const minX = Math.min(B.x, M.x, J.x, R.x);
+        const maxX = Math.max(B.x, M.x, J.x, R.x);
 
-    const rp1 = rotatePoint(p1.x, p1.y, x, y, angle);
-    const rp2 = rotatePoint(p2.x, p2.y, x, y, angle);
-    const rp3 = rotatePoint(p3.x, p3.y, x, y, angle);
-    const rp4 = rotatePoint(p4.x, p4.y, x, y, angle);
+        return `
+          <text x="${(minX + maxX) / 2}" y="${y0 - 12}" text-anchor="middle" fill="#5c5044" font-size="15">${title}</text>
 
-    const labelX = (rp1.x + rp2.x + rp3.x + rp4.x) / 4;
-    const labelY = (rp1.y + rp2.y + rp3.y + rp4.y) / 4;
+          <!-- seam allowance — dashed green -->
+          <path d="
+            M ${B.x - dir * seam} ${B.y - seam}
+            L ${M.x + dir * seam} ${M.y - seam}
+            Q ${curveCtrl.x + dir * seam} ${curveCtrl.y} ${J.x + dir * seam} ${J.y}
+            L ${R.x + dir * seam} ${R.y + seam}
+            L ${P.x - dir * seam} ${P.y + seam}
+            Z"
+            fill="none" stroke="#8a9e7a" stroke-width="1.5" stroke-dasharray="8 6" />
 
-    const seamRp1 = rotatePoint(p1.x - seam, p1.y - seam, x, y, angle);
-    const seamRp2 = rotatePoint(p2.x + seam, p2.y - seam, x, y, angle);
-    const seamRp3 = rotatePoint(p3.x + seam, p3.y + seam, x, y, angle);
-    const seamRp4 = rotatePoint(p4.x - seam, p4.y + seam, x, y, angle);
+          <!-- cut line — solid dark -->
+          <path d="
+            M ${B.x} ${B.y}
+            L ${P.x} ${P.y}
+            L ${R.x} ${R.y}
+            L ${J.x} ${J.y}
+            Q ${curveCtrl.x} ${curveCtrl.y} ${M.x} ${M.y}
+            L ${B.x} ${B.y}
+            Z"
+            fill="none" stroke="#5c5044" stroke-width="2" />
 
-    return `
-      <!-- Margen pieza ${name} -->
-      <path
-        d="
-          M ${seamRp1.x} ${seamRp1.y}
-          L ${seamRp2.x} ${seamRp2.y}
-          L ${seamRp3.x} ${seamRp3.y}
-          L ${seamRp4.x} ${seamRp4.y}
-          Z
-        "
-        fill="none"
-        stroke="#8a9e7a"
-        stroke-width="2"
-        stroke-dasharray="8 6"
-      />
+          <!-- hip reference — dashed gray -->
+          <line x1="${K.x}" y1="${K.y}" x2="${J.x}" y2="${J.y}"
+            stroke="#979187" stroke-width="1" stroke-dasharray="5 4" />
 
-      <!-- Pieza ${name} -->
-      <path
-        d="
-          M ${rp1.x} ${rp1.y}
-          L ${rp2.x} ${rp2.y}
-          L ${rp3.x} ${rp3.y}
-          L ${rp4.x} ${rp4.y}
-          Z
-        "
-        fill="none"
-        stroke="#5c5044"
-        stroke-width="3"
-      />
+          <!-- darts -->
+          <line x1="${O.x}"  y1="${B.y}" x2="${L.x}" y2="${L.y}" stroke="#5c5044" stroke-width="1.2" />
+          <line x1="${O2.x}" y1="${B.y}" x2="${L.x}" y2="${L.y}" stroke="#5c5044" stroke-width="1.2" />
 
-      <text
-        x="${labelX}"
-        y="${labelY + 5}"
-        text-anchor="middle"
-        fill="#5c5044"
-        font-size="13">
-        ${name}
-      </text>
-    `;
-  }
+          ${drawDot(B)} ${drawDot(O)} ${drawDot(O2)} ${drawDot(M)}
+          ${drawDot(K)} ${drawDot(L)} ${drawDot(J)}
+          ${drawDot(P)} ${drawDot(R)}
+        `;
+      }
 
-  let currentX = startX;
-  let currentY = y;
-  let result = "";
+      patternPreview.innerHTML = `
+        ${anatomicalWaistband()}
+        ${skirtPiece(90,  wbBottom, false, "DELANTERO")}
+        ${skirtPiece(500, wbBottom, true,  "TRASERO")}
+        <text x="400" y="870" text-anchor="middle" fill="#979187" font-size="13">
+          Línea café = corte · línea verde = margen de costura 1 cm
+        </text>
+      `;
 
-  pieces.forEach((piece, index) => {
-    result += drawPiece(
-      currentX,
-      currentY,
-      piece.width,
-      pretinaHeight,
-      piece.angle,
-      piece.name
-    );
+      document.getElementById("pdfButton").style.display = "block";
+    }
 
-    const endTop = rotatePoint(
-      currentX + piece.width,
-      currentY,
-      currentX,
-      currentY,
-      piece.angle
-    );
-
-    currentX = endTop.x + pieceGap;
-    currentY = endTop.y;
-  });
-
-  return `
-    <text x="${startX}" y="${y - 35}" fill="#5c5044" font-size="17">
-      Pretina anatómica
-    </text>
-
-    ${result}
-
-    <text x="${startX}" y="${y + pretinaHeight + 80}" fill="#979187" font-size="12">
-      Pretina formada al cerrar las pinzas y unir las 4 piezas superiores.
-    </text>
-  `;
-}
-
-  patternPreview.innerHTML = `
-    ${skirtPiece(90, 90, false, "DELANTERO")}
-    ${skirtPiece(650, 90, true, "TRASERO")}
-
-    ${anatomicalWaistband()}
-
-    <text x="400" y="760" text-anchor="middle" fill="#979187" font-size="14">
-      Línea café = patrón · línea verde = margen de costura 1 cm
-    </text>
-  `;
-
-  document.getElementById("pdfButton").style.display = "block";
-}
     function drawBodice() {
       patternPreview.innerHTML = `
-        <text x="400" y="400" text-anchor="middle" fill="#979187" font-size="20">
-          Cuerpo básico próximamente
-        </text>
+        <text x="400" y="450" text-anchor="middle" fill="#979187" font-size="20">Cuerpo básico próximamente</text>
       `;
     }
 
     function downloadPatternPDF() {
       const { jsPDF } = window.jspdf;
-
-      const pdf = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: "a4"
-      });
-
-      const pageWidth = 210;
-      const pageHeight = 297;
-      const margin = 20;
-
+      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      const pageWidth = 210, pageHeight = 297, margin = 20;
       const printableWidth = pageWidth - margin * 2;
       const printableHeight = pageHeight - margin * 2;
-
       pdf.setDrawColor(210, 210, 210);
       pdf.setLineWidth(0.2);
       pdf.rect(margin, margin, printableWidth, printableHeight);
-
       pdf.setFontSize(10);
       pdf.setTextColor(90, 80, 68);
-      pdf.text("Falda básica - Página de prueba", margin, 12);
-
+      pdf.text("Falda básica - El Desastre", margin, 12);
       pdf.setDrawColor(90, 80, 68);
       pdf.rect(margin, pageHeight - margin - 50, 50, 50);
       pdf.setFontSize(8);
       pdf.text("5 cm x 5 cm", margin, pageHeight - margin - 53);
-
       pdf.save("falda-basica-a4.pdf");
     }
   </script>
