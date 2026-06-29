@@ -288,119 +288,66 @@
         return seam + outline + darts + hipRef + allDots + lbl;
       }
 
-      function svgPretina(frontPts) {
-        const { B1, O1, O3, M1 } = frontPts;
+function svgPretina(frontPts) {
+  const { B1, O1, O3, M1 } = frontPts;
 
-        const wbTop  = 30;
-        const startX = 30;
-        const ph     = pretina * sc;
-        const segTop = (cintura / 8) * sc;
+  const wbTop  = 30;
+  const startX = 30;
+  const ph     = pretina * sc;
+  const segTop = (cintura / 8) * sc; // top of each piece = cintura/8
 
-        // Bottom segment lengths from actual skirt cut lines
-        const segBot_BtoO  = Math.sqrt((O1.x-B1.x)**2 + (O1.y-B1.y)**2);
-        const segBot_O2toM = Math.sqrt((M1.x-O3.x)**2 + (M1.y-O3.y)**2);
+  // Bottom lengths — actual distances along the cut lines on the skirt
+  const botLen_BO  = Math.sqrt((O1.x-B1.x)**2 + (O1.y-B1.y)**2); // B1→O1 (left piece)
+  const botLen_O2M = Math.sqrt((M1.x-O3.x)**2 + (M1.y-O3.y)**2); // O3→M1 (right piece)
 
-        // Dart opening remaining at cut line
-        const dartOpenAtCut = Math.max((1 - pretina / alto) * 3 * sc, 0);
+  // Each piece: top wider than bottom, difference split equally on each side
+  // This taper is what creates the curve when the 4 pieces are joined
+  function makePiece(startX, topLen, botLen) {
+    const offset = (topLen - botLen) / 2;
+    return {
+      TL: { x: startX,          y: wbTop      },  // top left
+      TR: { x: startX + topLen, y: wbTop      },  // top right
+      BL: { x: startX + offset, y: wbTop + ph },  // bottom left
+      BR: { x: startX + topLen - offset, y: wbTop + ph }  // bottom right
+    };
+  }
 
-        // TOP POINTS — flat, evenly spaced
-        const A  = { x: startX,           y: wbTop };
-        const C  = { x: A.x  + segTop,    y: wbTop };
-        const D  = { x: C.x  + segTop,    y: wbTop };
-        const E  = { x: D.x  + segTop,    y: wbTop };
-        const F  = { x: E.x  + segTop,    y: wbTop };
-        const E2 = { x: F.x  + segTop,    y: wbTop };
-        const D2 = { x: E2.x + segTop,    y: wbTop };
-        const C2 = { x: D2.x + segTop,    y: wbTop };
-        const S  = { x: C2.x + segTop,    y: wbTop };
+  const gap = 8; // small gap between pieces
 
-        // Bottom points — each segment centered under its top segment
-        // difference in length creates the angle at each joint
-        function bottomSeg(topLeft, topRight, botLen) {
-          const offset = (segTop - botLen) / 2;
-          return {
-            left:  { x: topLeft.x  + offset, y: wbTop + ph },
-            right: { x: topRight.x - offset, y: wbTop + ph }
-          };
-        }
+  // 4 pieces: front-left, front-right, back-left, back-right
+  const p1 = makePiece(startX,                            segTop, botLen_BO);
+  const p2 = makePiece(p1.TR.x + gap,                    segTop, botLen_O2M);
+  const p3 = makePiece(p2.TR.x + gap,                    segTop, botLen_O2M); // back mirrors front
+  const p4 = makePiece(p3.TR.x + gap,                    segTop, botLen_BO);
 
-        const seg1 = bottomSeg(A,  C,  segBot_BtoO);      // front left:  B1→O1
-        const seg2 = bottomSeg(C,  D,  dartOpenAtCut);     // front dart:  partially closed
-        const seg3 = bottomSeg(D,  E,  segBot_O2toM);     // front right: O3→M1
-        const seg4 = bottomSeg(E,  F,  segBot_O2toM);     // back right:  mirror O3→M1
-        const seg5 = bottomSeg(F,  E2, dartOpenAtCut);    // back dart:   mirror
-        const seg6 = bottomSeg(E2, D2, segBot_BtoO);      // back left:   mirror B1→O1
-        const seg7 = bottomSeg(D2, C2, segBot_O2toM);     // extra segment
-        const seg8 = bottomSeg(C2, S,  segBot_BtoO);      // extra segment
+  const pieces = [p1, p2, p3, p4];
+  const labels = ["D1", "D2", "T1", "T2"];
 
-        const G    = { x: A.x, y: wbTop + ph };
-        const Gend = { x: S.x, y: wbTop + ph };
+  let svg = `<text x="${(p1.TL.x + p4.TR.x) / 2}" y="${wbTop - 12}"
+    text-anchor="middle" fill="#5c5044" font-size="13" font-family="DM Sans,sans-serif">
+    Pretina anatómica (½ falda)
+  </text>`;
 
-        const topEdge = [A, C, D, E, F, E2, D2, C2, S];
-        const botEdge = [G, seg1.right, seg2.right, seg3.right, seg4.right, seg5.right, seg6.right, seg7.right, Gend];
-        const fullPoly = [...topEdge, ...[...botEdge].reverse()];
+  pieces.forEach((p, i) => {
+    const poly = [p.TL, p.TR, p.BR, p.BL];
 
-        // seam allowance — solid green
-        const seam = seamPath(fullPoly);
+    // seam allowance — solid green
+    svg += seamPath(poly);
 
-        // cut lines — dashed dark
-        const topPath   = draftPath(polyPath(topEdge, false));
-        const botPath   = draftPath(polyPath(botEdge, false));
-        const leftEdge  = draftLine(A.x, A.y, G.x, G.y);
-        const rightEdge = draftLine(S.x, S.y, Gend.x, Gend.y);
+    // cut line — dashed dark
+    svg += draftPath(`M ${p.TL.x} ${p.TL.y} L ${p.TR.x} ${p.TR.y} L ${p.BR.x} ${p.BR.y} L ${p.BL.x} ${p.BL.y} Z`);
 
-        // angle joint marks — light gray dashed (reference only)
-        function angleMark(top, bot) {
-          return `<line x1="${top.x}" y1="${top.y}" x2="${bot.x}" y2="${bot.y}"
-            stroke="#979187" stroke-width="0.8" stroke-dasharray="3 3"/>`;
-        }
-        const angleMarks = [
-          angleMark(C,  seg1.right),
-          angleMark(D,  seg2.right),
-          angleMark(E,  seg3.right),
-          angleMark(F,  seg4.right),
-          angleMark(E2, seg5.right),
-          angleMark(D2, seg6.right),
-          angleMark(C2, seg7.right),
-        ].join("");
+    // label
+    const cx = (p.TL.x + p.TR.x) / 2;
+    const cy = (p.TL.y + p.BL.y) / 2 + 5;
+    svg += `<text x="${cx}" y="${cy}" text-anchor="middle" fill="#5c5044" font-size="11" font-family="DM Sans,sans-serif">${labels[i]}</text>`;
 
-        const lbl = `<text x="${(A.x+S.x)/2}" y="${wbTop - 12}"
-          text-anchor="middle" fill="#5c5044" font-size="13" font-family="DM Sans,sans-serif">
-          Pretina anatómica (½ falda)
-        </text>`;
+    // dots
+    poly.forEach(pt => { svg += dot(pt); });
+  });
 
-        const allDots = [...topEdge, ...botEdge].map(dot).join("");
-
-        return seam + topPath + botPath + leftEdge + rightEdge + angleMarks + allDots + lbl;
-      }
-
-      // ── LAYOUT ───────────────────────────────────────────────────────
-      const pretinaHeight = pretina * sc + 60;
-
-      const frontOriginX = 40;
-      const frontOriginY = pretinaHeight + 30;
-      const frontPts     = buildSkirtPoints(frontOriginX, frontOriginY, 1);
-
-      const pieceW      = (cadera/4) * sc;
-      const gap         = 40;
-      const backOriginX = frontOriginX + pieceW + gap + pieceW;
-      const backOriginY = frontOriginY;
-      const backPts     = buildSkirtPoints(backOriginX, backOriginY, -1);
-
-      const frontLabelX = frontOriginX + pieceW/2;
-      const backLabelX  = backOriginX  - pieceW/2;
-
-      patternPreview.innerHTML = `
-        ${svgPretina(frontPts)}
-        ${svgSkirtBody(frontPts, "DELANTERO", frontLabelX)}
-        ${svgSkirtBody(backPts,  "ESPALDA",   backLabelX)}
-        <text x="450" y="970" text-anchor="middle" fill="#979187" font-size="12" font-family="DM Sans,sans-serif">
-          Línea café = corte · línea verde = margen costura 1 cm · línea gris = referencia cadera
-        </text>
-      `;
-
-      document.getElementById("pdfButton").style.display = "block";
-    }
+  return svg;
+}
 
     function drawBodice() {
       patternPreview.innerHTML = `<text x="450" y="500" text-anchor="middle" fill="#979187" font-size="18">Cuerpo básico próximamente</text>`;
