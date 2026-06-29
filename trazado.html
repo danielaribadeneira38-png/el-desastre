@@ -221,6 +221,13 @@
       return `<path d="${polyPath(off)}" fill="none" stroke="#8a9e7a" stroke-width="1.4"/>`;
     }
 
+  function draftPath(d) {
+  return `<path d="${d}" fill="none" stroke="#5c5044" stroke-width="2" stroke-dasharray="7 5"/>`;
+}
+
+function draftLine(x1, y1, x2, y2, width="2") {
+  return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#5c5044" stroke-width="${width}" stroke-dasharray="7 5"/>`;
+}
 
     // ── SKIRT ─────────────────────────────────────────────────────────────
     function drawSkirt() {
@@ -320,17 +327,16 @@
         const bodyPoly = [B1, O1, O3, M1, J, R, P];
 
 
-        const outline = `
-          <path d="
-            M ${B1.x.toFixed(1)} ${B1.y.toFixed(1)}
-            L ${O1.x.toFixed(1)} ${O1.y.toFixed(1)}
-            M ${O3.x.toFixed(1)} ${O3.y.toFixed(1)}
-            L ${M1.x.toFixed(1)} ${M1.y.toFixed(1)}
-            Q ${hipCtrl.x.toFixed(1)} ${hipCtrl.y.toFixed(1)} ${J.x.toFixed(1)} ${J.y.toFixed(1)}
-            L ${R.x.toFixed(1)} ${R.y.toFixed(1)}
-            L ${P.x.toFixed(1)} ${P.y.toFixed(1)}
-            L ${B1.x.toFixed(1)} ${B1.y.toFixed(1)}
-            Z"
+        const outline = draftPath(`
+  M ${B1.x.toFixed(1)} ${B1.y.toFixed(1)}
+  L ${O1.x.toFixed(1)} ${O1.y.toFixed(1)}
+  M ${O3.x.toFixed(1)} ${O3.y.toFixed(1)}
+  L ${M1.x.toFixed(1)} ${M1.y.toFixed(1)}
+  Q ${hipCtrl.x.toFixed(1)} ${hipCtrl.y.toFixed(1)} ${J.x.toFixed(1)} ${J.y.toFixed(1)}
+  L ${R.x.toFixed(1)} ${R.y.toFixed(1)}
+  L ${P.x.toFixed(1)} ${P.y.toFixed(1)}
+  L ${B1.x.toFixed(1)} ${B1.y.toFixed(1)}
+  Z`);
             fill="none" stroke="#5c5044" stroke-width="2" stroke-dasharray="7 5"/>
         `;
 
@@ -483,7 +489,7 @@ function svgPretina(frontPts) {
 
 
       patternPreview.innerHTML = `
-        ${svgPretina(frontPts, backPts)}
+        ${svgPretina(frontPts)}
         ${svgSkirtBody(frontPts, "DELANTERO", frontLabelX)}
         ${svgSkirtBody(backPts,  "ESPALDA",   backLabelX)}
         <text x="450" y="970" text-anchor="middle" fill="#979187" font-size="12" font-family="DM Sans,sans-serif">
