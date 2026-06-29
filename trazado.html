@@ -339,117 +339,121 @@
       // Verticals A-G, C-N, D-Q, E-R, F-S = pretina length, NOT drawn
       // Angles at C,D,E,F match dart leg slopes from the skirt
 
-      function svgPretina(frontPts, backPts) {
-        const { B, O, O2, M, L, J, B1, O1, O3, M1 } = frontPts;
-        const bk = backPts; // back piece points
+function svgPretina(frontPts) {
+  const { B1, O1, O3, M1 } = frontPts;
 
-        const wbTop  = 30;
-        const startX = 30;
-        const segLen = (cintura / 8) * sc;
-        const ph     = pretina * sc; // pretina height in px
+  const wbTop  = 30;
+  const startX = 30;
+  const ph     = pretina * sc;
+  const segTop = (cintura / 8) * sc; // each top segment = cintura/8
 
-        // We place A at startX, wbTop
-        // Each segment goes right at the angle of its corresponding dart slope
+  // Bottom segment lengths — actual distances along the cut lines
+  // These are shorter than the top because the dart has partially closed
+  const segBot_BtoO  = Math.sqrt((O1.x-B1.x)**2 + (O1.y-B1.y)**2); // B1 → O1
+  const segBot_O2toM = Math.sqrt((M1.x-O3.x)**2 + (M1.y-O3.y)**2); // O3 → M1
 
-        // Slope angles (in radians) from the skirt construction:
-        // Segment A→C: horizontal (left edge B→B1 is vertical, so top is flat)
-        // Segment C→D: follows slope of O→O1 (left dart leg direction at waist)
-        // Segment D→E: follows slope of O2→O3 (right dart leg direction at waist)
-        // Segment E→F: follows slope of M→M1 (side seam direction at waist)
-        // For back (mirrored) E→F and D→E are mirrored
+  // The pretina has 4 top segments (A-C, C-D, D-E, E-F) all = cintura/8
+  // and 4 bottom segments where the two dart segments are shorter
+  // G-N = B1-O1 length, N-Q = O3-M1 length, Q-R = O3-M1 length, R-S = B1-O1 length
 
-        // Get unit vector from two points
-        function unitVec(p1, p2) {
-          const dx = p2.x - p1.x, dy = p2.y - p1.y;
-          const len = Math.sqrt(dx*dx + dy*dy) || 1;
-          return { x: dx/len, y: dy/len };
-        }
+  // Build points left to right on a flat baseline, then the angles emerge
+  // naturally from the difference in top vs bottom lengths
 
-        // Perpendicular (rotated 90° clockwise = downward-right for our orientation)
-        function perpDown(uv) {
-          return { x: uv.y, y: -uv.x };
-        }
+  // TOP POINTS (all at y = wbTop, evenly spaced at segTop)
+  const A = { x: startX,              y: wbTop };
+  const C = { x: A.x + segTop,        y: wbTop };
+  const D = { x: C.x + segTop,        y: wbTop };
+  const E = { x: D.x + segTop,        y: wbTop };
+  const F = { x: E.x + segTop,        y: wbTop };
+  const E2= { x: F.x + segTop,        y: wbTop };
+  const D2= { x: E2.x + segTop,       y: wbTop };
+  const C2= { x: D2.x + segTop,       y: wbTop };
+  const S = { x: C2.x + segTop,       y: wbTop };
 
-        // Unit vectors along each dart slope (waist → cut point direction)
-        const uvAC = { x: 1, y: 0 };                        // left edge: horizontal
-        const uvCD = unitVec(B, O1);   // front left dart leg slope projected to waist
-        const uvDE = unitVec(O2, O3);  // front right dart leg
-        const uvEF = unitVec(M, M1);   // front side seam
+  // BOTTOM POINTS
+  // Each bottom point is placed by centering the shorter bottom segment
+  // under the top segment — the leftover space creates equal angles on both sides
 
-        // Back slopes (mirrored — flip x component)
-        const uvFE2 = { x: -uvEF.x, y: uvEF.y };
-        const uvED2 = { x: -uvDE.x, y: uvDE.y };
-        const uvDC2 = { x: -uvCD.x, y: uvCD.y };
-        const uvCS  = { x: -1, y: 0 };
+  function bottomSegment(topLeft, topRight, botLen) {
+    const topLen = topRight.x - topLeft.x;
+    const offset = (topLen - botLen) / 2; // how much shorter on each side
+    return {
+      left:  { x: topLeft.x  + offset, y: wbTop + ph },
+      right: { x: topRight.x - offset, y: wbTop + ph }
+    };
+  }
 
-        // Build top points A→C→D→E→F→E2→D2→C2→S sequentially
-        // Each point = previous + unitVec * segLen
-        function addVec(p, uv, dist) {
-          return { x: p.x + uv.x*dist, y: p.y + uv.y*dist };
-        }
+  // Segment A-C (front left): top=cintura/8, bottom=B1→O1
+  const seg1 = bottomSegment(A, C, segBot_BtoO);
+  // Segment C-D (front dart): top=cintura/8, bottom=O1→O3 (dart partially closed = shorter)
+  const dartTopWidth   = segTop;
+  const dartBotWidth   = segBot_BtoO - segBot_BtoO + segBot_O2toM - segBot_O2toM; // =0 at tip
+  // dart bottom width = how much dart is still open at cut line
+  const dartOpenAtCut  = (1 - pretina / alto) * 3 * sc; // remaining dart opening
+  const seg2 = bottomSegment(C, D, Math.max(dartOpenAtCut, 0));
+  // Segment D-E (front right): top=cintura/8, bottom=O3→M1
+  const seg3 = bottomSegment(D, E, segBot_O2toM);
+  // Segment E-F (back right): mirror of D-E
+  const seg4 = bottomSegment(E, F, segBot_O2toM);
+  // Segment F-E2 (back dart): mirror of C-D
+  const seg5 = bottomSegment(F, E2, Math.max(dartOpenAtCut, 0));
+  // Segment E2-D2 (back left): mirror of A-C
+  const seg6 = bottomSegment(E2, D2, segBot_BtoO);
+  // Segment D2-C2: mirror
+  const seg7 = bottomSegment(D2, C2, segBot_O2toM);
+  // Segment C2-S: mirror
+  const seg8 = bottomSegment(C2, S, segBot_BtoO);
 
-        const A  = { x: startX, y: wbTop };
-        const C  = addVec(A,  uvAC, segLen);
-        const D  = addVec(C,  uvCD, segLen);
-        const E  = addVec(D,  uvDE, segLen);
-        const F  = addVec(E,  uvEF, segLen);
-        // continue for back half (mirror slopes)
-        const E2 = addVec(F,  uvFE2, segLen);
-        const D2 = addVec(E2, uvED2, segLen);
-        const C2 = addVec(D2, uvDC2, segLen);
-        const S  = addVec(C2, uvCS,  segLen);
+  // All bottom points in order G-N-Q-R-S...
+  const G    = { x: A.x,           y: wbTop + ph }; // left edge straight down
+  const Gend = { x: S.x,           y: wbTop + ph }; // right edge straight down
 
-        // Bottom points: each top point + perpendicular down * pretina height
-        // perpendicular to each segment's direction = rotate 90°
-        function bottomPt(topPt, uv) {
-          // perpendicular pointing "downward" (into the band)
-          const perp = { x: -uv.y, y: uv.x };
-          return { x: topPt.x + perp.x*ph, y: topPt.y + perp.y*ph };
-        }
+  // Top edge
+  const topEdge = [A, C, D, E, F, E2, D2, C2, S];
+  // Bottom edge — use the right edge of each segment as the point
+  const botEdge = [
+    G,
+    seg1.right,
+    seg2.right,
+    seg3.right,
+    seg4.right,
+    seg5.right,
+    seg6.right,
+    seg7.right,
+    Gend
+  ];
 
-        const G   = bottomPt(A,  uvAC);
-        const N   = bottomPt(C,  uvCD);
-        const Q   = bottomPt(D,  uvDE);
-        const R_  = bottomPt(E,  uvEF);
-        const S2  = bottomPt(F,  uvFE2);
-        const R2  = bottomPt(E2, uvED2);
-        const Q2  = bottomPt(D2, uvDC2);
-        const N2  = bottomPt(C2, uvCS);
-        const Gend= bottomPt(S,  uvCS);
+  const fullPoly = [...topEdge, ...[...botEdge].reverse()];
 
-        // Top edge path (A→C→D→E→F→E2→D2→C2→S)
-        const topEdge = [A,C,D,E,F,E2,D2,C2,S];
-        // Bottom edge path (G→N→Q→R_→S2→R2→Q2→N2→Gend)
-        const botEdge = [G,N,Q,R_,S2,R2,Q2,N2,Gend];
+  const topPath  = `<path d="${polyPath(topEdge, false)}" fill="none" stroke="#5c5044" stroke-width="2"/>`;
+  const botPath  = `<path d="${polyPath(botEdge, false)}" fill="none" stroke="#5c5044" stroke-width="2"/>`;
+  const leftEdge = `<line x1="${A.x}" y1="${A.y}" x2="${G.x}" y2="${G.y}" stroke="#5c5044" stroke-width="2"/>`;
+  const rightEdge= `<line x1="${S.x}" y1="${S.y}" x2="${Gend.x}" y2="${Gend.y}" stroke="#5c5044" stroke-width="2"/>`;
 
-        // Full outline polygon
-        const fullPoly = [...topEdge, ...[...botEdge].reverse()];
+  // Angle joint marks (dashed vertical lines at each top/bottom junction)
+  function angleMark(top, bot) {
+    return `<line x1="${top.x}" y1="${top.y}" x2="${bot.x}" y2="${bot.y}"
+      stroke="#979187" stroke-width="0.8" stroke-dasharray="3 3"/>`;
+  }
+  const angleMarks = [
+    angleMark(C,  seg1.right),
+    angleMark(D,  seg2.right),
+    angleMark(E,  seg3.right),
+    angleMark(F,  seg4.right),
+    angleMark(E2, seg5.right),
+    angleMark(D2, seg6.right),
+    angleMark(C2, seg7.right),
+  ].join("");
 
-        const topPath = `<path d="${polyPath(topEdge, false)}" fill="none" stroke="#5c5044" stroke-width="2"/>`;
-        const botPath = `<path d="${polyPath(botEdge, false)}" fill="none" stroke="#5c5044" stroke-width="2"/>`;
-        const leftEdge = `<line x1="${A.x.toFixed(1)}" y1="${A.y.toFixed(1)}" x2="${G.x.toFixed(1)}" y2="${G.y.toFixed(1)}" stroke="#5c5044" stroke-width="2"/>`;
-        const rightEdge= `<line x1="${S.x.toFixed(1)}" y1="${S.y.toFixed(1)}" x2="${Gend.x.toFixed(1)}" y2="${Gend.y.toFixed(1)}" stroke="#5c5044" stroke-width="2"/>`;
+  const lbl = `<text x="${(A.x+S.x)/2}" y="${wbTop - 12}"
+    text-anchor="middle" fill="#5c5044" font-size="13" font-family="DM Sans,sans-serif">
+    Pretina anatómica (½ falda)
+  </text>`;
 
-        // Angle marks at joints (small vertical tick showing the angle break)
-        function angleMark(top, bot) {
-          return `<line x1="${top.x.toFixed(1)}" y1="${top.y.toFixed(1)}"
-            x2="${bot.x.toFixed(1)}" y2="${bot.y.toFixed(1)}"
-            stroke="#979187" stroke-width="0.8" stroke-dasharray="3 3"/>`;
-        }
-        const angleMarks = [
-          angleMark(C, N), angleMark(D, Q), angleMark(E, R_),
-          angleMark(F, S2), angleMark(E2, R2), angleMark(D2, Q2), angleMark(C2, N2)
-        ].join("");
+  const allDots = [...topEdge, ...botEdge].map(dot).join("");
 
-        const lbl = `<text x="${(A.x+S.x)/2}" y="${wbTop - 12}"
-          text-anchor="middle" fill="#5c5044" font-size="13" font-family="DM Sans,sans-serif">
-          Pretina anatómica (½ falda)
-        </text>`;
-
-        const allDots = [...topEdge, ...botEdge].map(dot).join("");
-
-        return seamPath(fullPoly) + topPath + botPath + leftEdge + rightEdge + angleMarks + allDots + lbl;
-      }
+  return seamPath(fullPoly) + topPath + botPath + leftEdge + rightEdge + angleMarks + allDots + lbl;
+}
 
       // ── LAYOUT ───────────────────────────────────────────────────────
       // Pretina at top, two skirt pieces below side by side
