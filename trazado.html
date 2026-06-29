@@ -106,305 +106,364 @@
           <text x="450" y="500" text-anchor="middle" fill="#979187" font-size="20">Aquí aparecerá el patrón</text>
         </svg>
         <div class="legend">
-          <span><span class="legend-dashed"></span> Línea de corte</span>
-          <span><span class="legend-solid"></span> Margen de costura 1 cm</span>
-        </div>
+  <span><span class="legend-solid"></span> Línea de corte</span>
+  <span><span class="legend-dashed"></span> Margen de costura 1 cm</span>
+</div>
       </div>
     </div>
   </section>
 
   <script>
-    const topSelect       = document.getElementById("topSelect");
-    const bottomSelect    = document.getElementById("bottomSelect");
-    const patternCard     = document.getElementById("patternCard");
-    const patternTitle    = document.getElementById("patternTitle");
-    const measurementList = document.getElementById("measurementList");
-    const patternPreview  = document.getElementById("patternPreview");
+  const topSelect = document.getElementById("topSelect");
+  const bottomSelect = document.getElementById("bottomSelect");
+  const patternCard = document.getElementById("patternCard");
+  const patternTitle = document.getElementById("patternTitle");
+  const measurementList = document.getElementById("measurementList");
+  const patternPreview = document.getElementById("patternPreview");
+  const pdfButton = document.getElementById("pdfButton");
 
-    const patterns = {
-      bodice: { title: "Cuerpo básico", measurements: ["Busto","Cintura","Contorno de cuello"] },
-      skirt:  { title: "Falda básica",  measurements: ["Contorno cintura","Contorno cadera","Alto cadera","Largo de falda","Pretina"] }
+  const patterns = {
+    bodice: {
+      title: "Cuerpo básico",
+      measurements: ["Busto", "Cintura", "Contorno de cuello"]
+    },
+    skirt: {
+      title: "Falda básica",
+      measurements: [
+        "Contorno cintura",
+        "Contorno cadera",
+        "Alto cadera",
+        "Largo de falda",
+        "Pretina"
+      ]
+    }
+  };
+
+  const ids = {
+    "Contorno cintura": "cintura",
+    "Contorno cadera": "cadera",
+    "Alto cadera": "alto",
+    "Largo de falda": "largo",
+    "Pretina": "pretina"
+  };
+
+  function showPattern(type) {
+    if (!type) return;
+
+    const selected = patterns[type];
+    patternCard.classList.add("active");
+    patternTitle.textContent = selected.title;
+    measurementList.innerHTML = "";
+    pdfButton.style.display = "none";
+
+    selected.measurements.forEach((measurement) => {
+      const row = document.createElement("div");
+      row.className = "measurement-row";
+
+      const inputId = ids[measurement] || measurement.toLowerCase().replaceAll(" ", "-");
+
+      row.innerHTML = `
+        <label>${measurement}</label>
+        <input id="${inputId}" type="number" placeholder="cm">
+      `;
+
+      measurementList.appendChild(row);
+    });
+
+    patternPreview.innerHTML = `
+      <text x="450" y="500" text-anchor="middle" fill="#979187" font-size="20">
+        Presiona "Trazar patrón"
+      </text>
+    `;
+  }
+
+  topSelect.addEventListener("change", function () {
+    bottomSelect.value = "";
+    showPattern(this.value);
+  });
+
+  bottomSelect.addEventListener("change", function () {
+    topSelect.value = "";
+    showPattern(this.value);
+  });
+
+  function drawPattern() {
+    if (bottomSelect.value === "skirt") {
+      drawSkirt();
+      return;
+    }
+
+    if (topSelect.value === "bodice") {
+      drawBodice();
+      return;
+    }
+  }
+
+  function point(p) {
+    return `<circle cx="${p.x}" cy="${p.y}" r="2" fill="#768067" />`;
+  }
+
+  function moveTowards(a, b, distance) {
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const length = Math.sqrt(dx * dx + dy * dy);
+
+    if (length === 0) return { ...a };
+
+    return {
+      x: a.x + (dx / length) * distance,
+      y: a.y + (dy / length) * distance
     };
-    const ids = {
-      "Contorno cintura": "cintura",
-      "Contorno cadera":  "cadera",
-      "Alto cadera":      "alto",
-      "Largo de falda":   "largo",
-      "Pretina":          "pretina"
-    };
+  }
 
-    function showPattern(type) {
-      if (!type) return;
-      const p = patterns[type];
-      patternCard.classList.add("active");
-      patternTitle.textContent = p.title;
-      measurementList.innerHTML = "";
-      document.getElementById("pdfButton").style.display = "none";
-      p.measurements.forEach(m => {
-        const row = document.createElement("div");
-        row.className = "measurement-row";
-        const id = ids[m] || m.toLowerCase().replaceAll(" ","-");
-        row.innerHTML = `<label>${m}</label><input id="${id}" type="number" placeholder="cm">`;
-        measurementList.appendChild(row);
-      });
-      patternPreview.innerHTML = `<text x="450" y="500" text-anchor="middle" fill="#979187" font-size="20">Presiona "Trazar patrón"</text>`;
+  function pathSolid(d) {
+    return `
+      <path
+        d="${d}"
+        fill="none"
+        stroke="#5c5044"
+        stroke-width="1.5"
+      />
+    `;
+  }
+
+  function pathSeam(d) {
+    return `
+      <path
+        d="${d}"
+        fill="none"
+        stroke="#8a9e7a"
+        stroke-width="1.2"
+        stroke-dasharray="6 5"
+      />
+    `;
+  }
+
+  function lineSolid(a, b) {
+    return `
+      <line
+        x1="${a.x}" y1="${a.y}"
+        x2="${b.x}" y2="${b.y}"
+        stroke="#5c5044"
+        stroke-width="1.2"
+      />
+    `;
+  }
+
+  function lineReference(a, b) {
+    return `
+      <line
+        x1="${a.x}" y1="${a.y}"
+        x2="${b.x}" y2="${b.y}"
+        stroke="#979187"
+        stroke-width="0.9"
+        stroke-dasharray="5 5"
+      />
+    `;
+  }
+
+  function drawSkirt() {
+    const cintura = Number(document.getElementById("cintura").value);
+    const cadera = Number(document.getElementById("cadera").value);
+    const alto = Number(document.getElementById("alto").value);
+    const largo = Number(document.getElementById("largo").value);
+    const pretina = Number(document.getElementById("pretina").value);
+
+    if (!cintura || !cadera || !alto || !largo || !pretina) {
+      alert("Por favor ingresa todas las medidas.");
+      return;
     }
 
-    topSelect.addEventListener("change",    function(){ bottomSelect.value=""; showPattern(this.value); });
-    bottomSelect.addEventListener("change", function(){ topSelect.value="";    showPattern(this.value); });
+    const scale = 6;
+    const seam = 1 * scale;
 
-    function drawPattern() {
-      if (bottomSelect.value==="skirt")  { drawSkirt();  return; }
-      if (topSelect.value==="bodice")    { drawBodice(); return; }
+    function draftPiece(x0, y0, dir, title) {
+      const waistY = y0 - pretina * scale;
+
+      const B = { x: x0, y: waistY };
+      const O = { x: B.x + dir * (cintura / 8) * scale, y: waistY };
+      const O2 = { x: O.x + dir * 3 * scale, y: waistY };
+      const M = { x: O2.x + dir * (cintura / 8) * scale, y: waistY };
+
+      const K = { x: x0, y: y0 + (alto - pretina) * scale };
+      const L = { x: x0 + dir * (cintura / 8 + 1.5) * scale, y: K.y };
+      const J = { x: x0 + dir * (cadera / 4) * scale, y: K.y };
+
+      const P = { x: x0, y: y0 + (largo - pretina) * scale };
+      const R = { x: x0 + dir * (cadera / 4) * scale, y: P.y };
+
+      const B1 = moveTowards(B, K, pretina * scale);
+      const O1 = moveTowards(O, L, pretina * scale);
+      const O3 = moveTowards(O2, L, pretina * scale);
+      const M1 = moveTowards(M, J, pretina * scale);
+
+      const hipCtrl = {
+        x: M1.x + (J.x - M1.x) * 0.4,
+        y: M1.y + (J.y - M1.y) * 0.3
+      };
+
+      const minX = Math.min(B1.x, M1.x, P.x, R.x);
+      const maxX = Math.max(B1.x, M1.x, P.x, R.x);
+
+      const cutLine = `
+        M ${B1.x} ${B1.y}
+        L ${O1.x} ${O1.y}
+        M ${O3.x} ${O3.y}
+        L ${M1.x} ${M1.y}
+        Q ${hipCtrl.x} ${hipCtrl.y} ${J.x} ${J.y}
+        L ${R.x} ${R.y}
+        L ${P.x} ${P.y}
+        Z
+      `;
+
+      const seamLine = `
+        M ${B1.x - dir * seam} ${B1.y - seam}
+        L ${O1.x} ${O1.y - seam}
+        M ${O3.x} ${O3.y - seam}
+        L ${M1.x + dir * seam} ${M1.y - seam}
+        Q ${hipCtrl.x + dir * seam} ${hipCtrl.y} ${J.x + dir * seam} ${J.y}
+        L ${R.x + dir * seam} ${R.y + seam}
+        L ${P.x - dir * seam} ${P.y + seam}
+        Z
+      `;
+
+      return {
+        svg: `
+          <text
+            x="${(minX + maxX) / 2}"
+            y="${B1.y - 18}"
+            text-anchor="middle"
+            fill="#5c5044"
+            font-size="14">
+            ${title}
+          </text>
+
+          ${pathSeam(seamLine)}
+          ${pathSolid(cutLine)}
+
+          ${lineSolid(O1, L)}
+          ${lineSolid(O3, L)}
+
+          ${lineReference(K, J)}
+
+          ${point(B1)}
+          ${point(O1)}
+          ${point(O3)}
+          ${point(M1)}
+          ${point(K)}
+          ${point(L)}
+          ${point(J)}
+          ${point(P)}
+          ${point(R)}
+        `,
+        waistPieces: [
+          { topA: B, topB: O, bottomA: B1, bottomB: O1 },
+          { topA: O2, topB: M, bottomA: O3, bottomB: M1 }
+        ]
+      };
     }
 
-    // ── utility ──────────────────────────────────────────────────────────
-    function dot(p) {
-      return `<circle cx="${p.x}" cy="${p.y}" r="2.5" fill="#768067"/>`;
+    function distance(a, b) {
+      return Math.sqrt((b.x - a.x) ** 2 + (b.y - a.y) ** 2);
     }
 
-    function moveTowards(p1, p2, dist) {
-      const dx = p2.x - p1.x;
-      const dy = p2.y - p1.y;
-      const len = Math.sqrt(dx*dx + dy*dy);
-      if (len === 0) return { ...p1 };
-      return { x: p1.x + (dx/len)*dist, y: p1.y + (dy/len)*dist };
-    }
+    function drawWaistband(front, back) {
+      const pieces = [
+        front.waistPieces[0],
+        front.waistPieces[1],
+        back.waistPieces[1],
+        back.waistPieces[0]
+      ];
 
-    function offsetPolygon(pts, amount) {
-      const n = pts.length;
-      return pts.map((p, i) => {
-        const prev = pts[(i - 1 + n) % n];
-        const next = pts[(i + 1) % n];
-        const ax = p.x - prev.x, ay = p.y - prev.y;
-        const bx = next.x - p.x, by = next.y - p.y;
-        const na = { x: ay, y: -ax };
-        const nb = { x: by, y: -bx };
-        const la = Math.sqrt(na.x*na.x + na.y*na.y) || 1;
-        const lb = Math.sqrt(nb.x*nb.x + nb.y*nb.y) || 1;
-        const miter = { x: (na.x/la + nb.x/lb), y: (na.y/la + nb.y/lb) };
-        const ml = Math.sqrt(miter.x*miter.x + miter.y*miter.y) || 1;
-        return { x: p.x + (miter.x/ml)*amount, y: p.y + (miter.y/ml)*amount };
-      });
-    }
+      const startX = 120;
+      const startY = 65;
+      const height = pretina * scale;
+      const angles = [-10, -3, 5, 12];
 
-    function polyPath(pts, close=true) {
-      return pts.map((p,i) => (i===0 ? `M ${p.x.toFixed(1)} ${p.y.toFixed(1)}` : `L ${p.x.toFixed(1)} ${p.y.toFixed(1)}`)).join(" ") + (close ? " Z" : "");
-    }
+      let topStart = { x: startX, y: startY };
+      let bottomStart = { x: startX, y: startY + height };
 
-    // seam allowance = solid green
-    function seamPath(pts) {
-      const off = offsetPolygon(pts, 7);
-      return `<path d="${polyPath(off)}" fill="none" stroke="#8a9e7a" stroke-width="1.4"/>`;
-    }
-
-    // drafted pattern line = dashed dark
-    function draftPath(d) {
-      return `<path d="${d}" fill="none" stroke="#5c5044" stroke-width="2" stroke-dasharray="7 5"/>`;
-    }
-
-    function draftLine(x1, y1, x2, y2, width="2") {
-      return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#5c5044" stroke-width="${width}" stroke-dasharray="7 5"/>`;
-    }
-
-    // ── SKIRT ─────────────────────────────────────────────────────────────
-    function drawSkirt() {
-      const cintura = Number(document.getElementById("cintura").value);
-      const cadera  = Number(document.getElementById("cadera").value);
-      const alto    = Number(document.getElementById("alto").value);
-      const largo   = Number(document.getElementById("largo").value);
-      const pretina = Number(document.getElementById("pretina").value);
-
-      if (!cintura||!cadera||!alto||!largo||!pretina) {
-        alert("Por favor ingresa todas las medidas."); return;
-      }
-
-      const pieceWidthCm  = cadera / 4;
-      const pieceHeightCm = largo - pretina;
-      const maxW = 380;
-      const maxH = 580;
-      const sc   = Math.min(maxW / pieceWidthCm, maxH / pieceHeightCm, 7);
-
-      function buildSkirtPoints(x0, y0, dir) {
-        const B  = { x: x0,                              y: y0 - pretina*sc };
-        const O  = { x: x0 + dir*(cintura/8)*sc,         y: y0 - pretina*sc };
-        const O2 = { x: O.x + dir*3*sc,                  y: y0 - pretina*sc };
-        const M  = { x: O2.x + dir*(cintura/8)*sc,       y: y0 - pretina*sc };
-
-        const K  = { x: x0,                              y: y0 + (alto - pretina)*sc };
-        const L  = { x: x0 + dir*(cintura/8 + 1.5)*sc,  y: y0 + (alto - pretina)*sc };
-        const J  = { x: x0 + dir*(cadera/4)*sc,         y: y0 + (alto - pretina)*sc };
-
-        const P  = { x: x0,                              y: y0 + (largo - pretina)*sc };
-        const R  = { x: x0 + dir*(cadera/4)*sc,         y: y0 + (largo - pretina)*sc };
-
-        const B1 = moveTowards(B, K,  pretina*sc);
-        const O1 = moveTowards(O, L,  pretina*sc);
-        const O3 = moveTowards(O2, L, pretina*sc);
-        const M1 = moveTowards(M, J,  pretina*sc);
-
-        return { B, O, O2, M, K, L, J, P, R, B1, O1, O3, M1 };
-      }
-
-      function svgSkirtBody(pts, label, labelX) {
-        const { B1, O1, O3, M1, K, L, J, P, R } = pts;
-
-        const hipCtrl = {
-          x: M1.x + (J.x - M1.x) * 0.3,
-          y: M1.y + (J.y - M1.y) * 0.3 + 8
-        };
-
-        const bodyPoly = [B1, O1, O3, M1, J, R, P];
-
-        // seam allowance — solid green
-        const seam = seamPath(bodyPoly);
-
-        // cut line — dashed dark
-        const outline = draftPath(`
-          M ${B1.x.toFixed(1)} ${B1.y.toFixed(1)}
-          L ${O1.x.toFixed(1)} ${O1.y.toFixed(1)}
-          M ${O3.x.toFixed(1)} ${O3.y.toFixed(1)}
-          L ${M1.x.toFixed(1)} ${M1.y.toFixed(1)}
-          Q ${hipCtrl.x.toFixed(1)} ${hipCtrl.y.toFixed(1)} ${J.x.toFixed(1)} ${J.y.toFixed(1)}
-          L ${R.x.toFixed(1)} ${R.y.toFixed(1)}
-          L ${P.x.toFixed(1)} ${P.y.toFixed(1)}
-          L ${B1.x.toFixed(1)} ${B1.y.toFixed(1)}
-          Z`);
-
-        // dart legs — dashed dark
-        const darts =
-          draftLine(O1.x.toFixed(1), O1.y.toFixed(1), L.x.toFixed(1), L.y.toFixed(1), "1.2") +
-          draftLine(O3.x.toFixed(1), O3.y.toFixed(1), L.x.toFixed(1), L.y.toFixed(1), "1.2");
-
-        // hip reference — gray dashed (keep as reference, not a cut line)
-        const hipRef = `<line x1="${K.x.toFixed(1)}" y1="${K.y.toFixed(1)}"
-          x2="${J.x.toFixed(1)}" y2="${J.y.toFixed(1)}"
-          stroke="#979187" stroke-width="1" stroke-dasharray="5 4"/>`;
-
-        const allDots = [B1, O1, O3, M1, K, L, J, P, R].map(dot).join("");
-        const lbl = `<text x="${labelX}" y="${B1.y - 14}" text-anchor="middle"
-          fill="#5c5044" font-size="13" font-family="DM Sans,sans-serif">${label}</text>`;
-
-        return seam + outline + darts + hipRef + allDots + lbl;
-      }
-
-      function svgPretina(frontPts) {
-        const { B1, O1, O3, M1 } = frontPts;
-
-        const wbTop  = 30;
-        const startX = 30;
-        const ph     = pretina * sc;
-        const segTop = (cintura / 8) * sc;
-
-        // Bottom segment lengths from actual skirt cut lines
-        const segBot_BtoO  = Math.sqrt((O1.x-B1.x)**2 + (O1.y-B1.y)**2);
-        const segBot_O2toM = Math.sqrt((M1.x-O3.x)**2 + (M1.y-O3.y)**2);
-
-        // Dart opening remaining at cut line
-        const dartOpenAtCut = Math.max((1 - pretina / alto) * 3 * sc, 0);
-
-        // TOP POINTS — flat, evenly spaced
-        const A  = { x: startX,           y: wbTop };
-        const C  = { x: A.x  + segTop,    y: wbTop };
-        const D  = { x: C.x  + segTop,    y: wbTop };
-        const E  = { x: D.x  + segTop,    y: wbTop };
-        const F  = { x: E.x  + segTop,    y: wbTop };
-        const E2 = { x: F.x  + segTop,    y: wbTop };
-        const D2 = { x: E2.x + segTop,    y: wbTop };
-        const C2 = { x: D2.x + segTop,    y: wbTop };
-        const S  = { x: C2.x + segTop,    y: wbTop };
-
-        // Bottom points — each segment centered under its top segment
-        // difference in length creates the angle at each joint
-        function bottomSeg(topLeft, topRight, botLen) {
-          const offset = (segTop - botLen) / 2;
-          return {
-            left:  { x: topLeft.x  + offset, y: wbTop + ph },
-            right: { x: topRight.x - offset, y: wbTop + ph }
-          };
-        }
-
-        const seg1 = bottomSeg(A,  C,  segBot_BtoO);      // front left:  B1→O1
-        const seg2 = bottomSeg(C,  D,  dartOpenAtCut);     // front dart:  partially closed
-        const seg3 = bottomSeg(D,  E,  segBot_O2toM);     // front right: O3→M1
-        const seg4 = bottomSeg(E,  F,  segBot_O2toM);     // back right:  mirror O3→M1
-        const seg5 = bottomSeg(F,  E2, dartOpenAtCut);    // back dart:   mirror
-        const seg6 = bottomSeg(E2, D2, segBot_BtoO);      // back left:   mirror B1→O1
-        const seg7 = bottomSeg(D2, C2, segBot_O2toM);     // extra segment
-        const seg8 = bottomSeg(C2, S,  segBot_BtoO);      // extra segment
-
-        const G    = { x: A.x, y: wbTop + ph };
-        const Gend = { x: S.x, y: wbTop + ph };
-
-        const topEdge = [A, C, D, E, F, E2, D2, C2, S];
-        const botEdge = [G, seg1.right, seg2.right, seg3.right, seg4.right, seg5.right, seg6.right, seg7.right, Gend];
-        const fullPoly = [...topEdge, ...[...botEdge].reverse()];
-
-        // seam allowance — solid green
-        const seam = seamPath(fullPoly);
-
-        // cut lines — dashed dark
-        const topPath   = draftPath(polyPath(topEdge, false));
-        const botPath   = draftPath(polyPath(botEdge, false));
-        const leftEdge  = draftLine(A.x, A.y, G.x, G.y);
-        const rightEdge = draftLine(S.x, S.y, Gend.x, Gend.y);
-
-        // angle joint marks — light gray dashed (reference only)
-        function angleMark(top, bot) {
-          return `<line x1="${top.x}" y1="${top.y}" x2="${bot.x}" y2="${bot.y}"
-            stroke="#979187" stroke-width="0.8" stroke-dasharray="3 3"/>`;
-        }
-        const angleMarks = [
-          angleMark(C,  seg1.right),
-          angleMark(D,  seg2.right),
-          angleMark(E,  seg3.right),
-          angleMark(F,  seg4.right),
-          angleMark(E2, seg5.right),
-          angleMark(D2, seg6.right),
-          angleMark(C2, seg7.right),
-        ].join("");
-
-        const lbl = `<text x="${(A.x+S.x)/2}" y="${wbTop - 12}"
-          text-anchor="middle" fill="#5c5044" font-size="13" font-family="DM Sans,sans-serif">
-          Pretina anatómica (½ falda)
-        </text>`;
-
-        const allDots = [...topEdge, ...botEdge].map(dot).join("");
-
-        return seam + topPath + botPath + leftEdge + rightEdge + angleMarks + allDots + lbl;
-      }
-
-      // ── LAYOUT ───────────────────────────────────────────────────────
-      const pretinaHeight = pretina * sc + 60;
-
-      const frontOriginX = 40;
-      const frontOriginY = pretinaHeight + 30;
-      const frontPts     = buildSkirtPoints(frontOriginX, frontOriginY, 1);
-
-      const pieceW      = (cadera/4) * sc;
-      const gap         = 40;
-      const backOriginX = frontOriginX + pieceW + gap + pieceW;
-      const backOriginY = frontOriginY;
-      const backPts     = buildSkirtPoints(backOriginX, backOriginY, -1);
-
-      const frontLabelX = frontOriginX + pieceW/2;
-      const backLabelX  = backOriginX  - pieceW/2;
-
-      patternPreview.innerHTML = `
-        ${svgPretina(frontPts)}
-        ${svgSkirtBody(frontPts, "DELANTERO", frontLabelX)}
-        ${svgSkirtBody(backPts,  "ESPALDA",   backLabelX)}
-        <text x="450" y="970" text-anchor="middle" fill="#979187" font-size="12" font-family="DM Sans,sans-serif">
-          Línea café = corte · línea verde = margen costura 1 cm · línea gris = referencia cadera
+      let svg = `
+        <text x="450" y="35" text-anchor="middle" fill="#5c5044" font-size="14">
+          Pretina anatómica
         </text>
       `;
 
-      document.getElementById("pdfButton").style.display = "block";
+      pieces.forEach((piece, index) => {
+        const topLength = distance(piece.topA, piece.topB);
+        const bottomLength = distance(piece.bottomA, piece.bottomB);
+
+        const angle = angles[index] * Math.PI / 180;
+
+        const topEnd = {
+          x: topStart.x + Math.cos(angle) * topLength,
+          y: topStart.y + Math.sin(angle) * topLength
+        };
+
+        const bottomEnd = {
+          x: bottomStart.x + Math.cos(angle) * bottomLength,
+          y: bottomStart.y + Math.sin(angle) * bottomLength
+        };
+
+        const seamD = `
+          M ${topStart.x - seam} ${topStart.y - seam}
+          L ${topEnd.x + seam} ${topEnd.y - seam}
+          L ${bottomEnd.x + seam} ${bottomEnd.y + seam}
+          L ${bottomStart.x - seam} ${bottomStart.y + seam}
+          Z
+        `;
+
+        const cutD = `
+          M ${topStart.x} ${topStart.y}
+          L ${topEnd.x} ${topEnd.y}
+          L ${bottomEnd.x} ${bottomEnd.y}
+          L ${bottomStart.x} ${bottomStart.y}
+          Z
+        `;
+
+        svg += pathSeam(seamD);
+        svg += pathSolid(cutD);
+
+        svg += `
+          <line
+            x1="${topStart.x}" y1="${topStart.y}"
+            x2="${bottomStart.x}" y2="${bottomStart.y}"
+            stroke="#979187"
+            stroke-width="0.8"
+            stroke-dasharray="4 4"
+          />
+        `;
+
+        topStart = topEnd;
+        bottomStart = bottomEnd;
+      });
+
+      return svg;
     }
 
-    function drawBodice() {
-      patternPreview.innerHTML = `<text x="450" y="500" text-anchor="middle" fill="#979187" font-size="18">Cuerpo básico próximamente</text>`;
-    }
+    const front = draftPiece(70, 260, 1, "DELANTERO");
+    const back = draftPiece(760, 260, -1, "ESPALDA");
+
+    patternPreview.innerHTML = `
+      ${drawWaistband(front, back)}
+      ${front.svg}
+      ${back.svg}
+
+      <text x="450" y="960" text-anchor="middle" fill="#979187" font-size="12">
+        Línea café = corte · línea verde = margen de costura 1 cm · línea gris = referencia de cadera
+      </text>
+    `;
+
+    pdfButton.style.display = "block";
+  }
+
+  function drawBodice() {
+    patternPreview.innerHTML = `
+      <text x="450" y="500" text-anchor="middle" fill="#979187" font-size="18">
+        Cuerpo básico próximamente
+      </text>
+    `;
+  }
   </script>
 </body>
 </html>
